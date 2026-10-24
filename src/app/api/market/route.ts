@@ -4,6 +4,7 @@ import {
 } from "@/lib/protocol/registry";
 import { repo } from "@/lib/store/repo";
 import type { StoreRecord } from "@/lib/store/types";
+import { verifySellers } from "@/lib/xrpl/seller-credential";
 
 export const runtime = "nodejs";
 
@@ -16,7 +17,11 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
   const listed = marketStores(await repo.listStores());
-  const products = filterMarketProducts(flattenMarketProducts(listed), q);
+  const verification = await verifySellers(listed.map((s) => s.merchantAddress));
+  const products = filterMarketProducts(
+    flattenMarketProducts(listed, verification),
+    q,
+  );
   return Response.json(
     {
       storeCount: listed.length,
@@ -28,6 +33,8 @@ export async function GET(request: Request) {
         skuCount: s.skus.length,
         merchantDisplayName: s.merchantDisplayName,
         merchantAddress: s.merchantAddress,
+        sellerVerified:
+          verification.get(s.merchantAddress)?.onLedger === true,
         visaReceive: s.visaReceive,
         listOnMarket: s.listOnMarket !== false,
       })),

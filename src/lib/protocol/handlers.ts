@@ -14,6 +14,7 @@ import {
 import { assertMandateAllows } from "@/lib/straitsx/mcp";
 import { repo } from "@/lib/store/repo";
 import type { CardMandate, Order, StoreRecord } from "@/lib/store/types";
+import { verifierInfo, verifySellerOnLedger } from "@/lib/xrpl/seller-credential";
 
 function json(data: unknown, status = 200, headers?: HeadersInit) {
   return new Response(JSON.stringify(data, null, 2), {
@@ -29,7 +30,8 @@ function json(data: unknown, status = 200, headers?: HeadersInit) {
 export async function handleLlmsTxt(slug: string, request: Request) {
   const store = await repo.getStore(slug);
   if (!store) return json({ error: "store not found" }, 404);
-  const body = renderLlmsTxt(store, originFromRequest(request));
+  const verification = await verifySellerOnLedger(store.merchantAddress);
+  const body = renderLlmsTxt(store, originFromRequest(request), verification);
   emit({
     status: 200,
     method: "GET",
@@ -45,7 +47,13 @@ export async function handleLlmsTxt(slug: string, request: Request) {
 export async function handleAgentJson(slug: string, request: Request) {
   const store = await repo.getStore(slug);
   if (!store) return json({ error: "store not found" }, 404);
-  const card = renderAgentCard(store, originFromRequest(request));
+  const verification = await verifySellerOnLedger(store.merchantAddress);
+  const card = renderAgentCard(
+    store,
+    originFromRequest(request),
+    verification,
+    verifierInfo(),
+  );
   emit({
     status: 200,
     method: "GET",

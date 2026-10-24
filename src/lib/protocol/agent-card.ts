@@ -1,8 +1,18 @@
 import { config } from "@/lib/config";
 import type { StoreRecord } from "@/lib/store/types";
+import {
+  sellerDidDocPath,
+  toSellerBadge,
+  type SellerVerification,
+} from "@/lib/xrpl/seller-verification-types";
 
 /** AI-readable store business card for agent discovery. */
-export function renderAgentCard(store: StoreRecord, origin: string) {
+export function renderAgentCard(
+  store: StoreRecord,
+  origin: string,
+  verification?: SellerVerification | null,
+  verifier?: unknown,
+) {
   const base = `${origin}/s/${store.slug}`;
   return {
     name: store.name,
@@ -20,6 +30,17 @@ export function renderAgentCard(store: StoreRecord, origin: string) {
       network: config.network,
     },
     payTo: store.merchantAddress,
+    /**
+     * Read from the XRPL ledger at request time. Agents should re-verify
+     * independently using `verifier.exampleRequest` (subject = payTo).
+     */
+    sellerVerification: verification
+      ? {
+          ...toSellerBadge(verification),
+          didDocument: `${origin}${sellerDidDocPath(store.merchantAddress)}`,
+          verifier: verifier ?? null,
+        }
+      : null,
     endpoints: {
       llmsTxt: `${base}/llms.txt`,
       agentCard: `${base}/agent.json`,

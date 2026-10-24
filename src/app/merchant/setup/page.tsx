@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useMerchantAuth } from "@/app/merchant/_components/merchant-auth-provider";
+import { SellerVerificationCard } from "@/app/merchant/_components/seller-verification-card";
 import {
   DEFAULT_MERCHANT_GOVERNANCE,
   merchantSetupComplete,
@@ -415,6 +416,8 @@ export default function MerchantSetupPage() {
           ) : null}
         </div>
       </form>
+
+      <SellerVerificationCard address={wallet} />
     </main>
   );
 }

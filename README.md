@@ -88,6 +88,10 @@ flowchart LR
 - Authorize in chat → RLUSD x402 on XRPL  
 - Injection-shaped listings quarantined; payee/amount stay locked  
 
+### Verified sellers on XRPL
+
+Borneo issues an **XLS-70 credential** (`BorneoVerifiedSeller`) to each vetted merchant's payout address. The merchant accepts it and sets an **XLS-40 DID** pointing at their storefronts. Registry, search, `agent.json` and `llms.txt` expose it, and search ranks verified sellers higher while demoting unverified and injection-flagged listings. Agents can re-check it on any XRPL node with no trust in Borneo: [`docs/verified-sellers.md`](./docs/verified-sellers.md).
+
 ### Governance
 
 Buyer spend limits (per tx / day / week). Merchant rails, price floors, market listing — policies that gate checkout.
@@ -123,6 +127,8 @@ Open [http://localhost:3000](http://localhost:3000).
 | `/api/search?q=` | Intent search (agents + buyer demo) |
 | `/registry.json` | Network store index |
 | `/s/{slug}/llms.txt` | Per-store agent discovery |
+| `/api/seller-verification?address=` | On-ledger seller credential + how to verify it yourself |
+| `/sellers/{payTo}/did.json` | Merchant DID document (target of the on-ledger DID) |
 
 ---
 
@@ -146,6 +152,7 @@ Without `OPENAI_API_KEY`, chat falls back to deterministic tools. Protocol endpo
 | `XRPL_BUYER_SEED` | Server-side x402 settle (`s…`) |
 | `MERCHANT_ADDRESS` | Default merchant payTo (`r…`) |
 | `XRPL_*` / `TOKEN_*` | Testnet RPC, facilitator, RLUSD issuer |
+| `BORNEO_ISSUER_SEED` | Verified-seller credential issuer (`node scripts/borneo-issuer-setup.mjs`) |
 
 ### Scripts
 

@@ -1,12 +1,40 @@
 import { config } from "@/lib/config";
 import type { StoreRecord } from "@/lib/store/types";
+import {
+  SELLER_CREDENTIAL_TYPE,
+  sellerDidDocPath,
+  type SellerVerification,
+} from "@/lib/xrpl/seller-verification-types";
 
 export function originFromRequest(request: Request) {
   const url = new URL(request.url);
   return process.env.PROTOCOL_ORIGIN || url.origin;
 }
 
-export function renderLlmsTxt(store: StoreRecord, origin: string) {
+function sellerSection(
+  store: StoreRecord,
+  origin: string,
+  v?: SellerVerification | null,
+) {
+  const status = v
+    ? v.onLedger
+      ? `VERIFIED on XRPL — credential "${SELLER_CREDENTIAL_TYPE}" from ${v.issuer} accepted by ${store.merchantAddress}`
+      : `NOT VERIFIED (${v.status}${v.reason ? `: ${v.reason}` : ""})`
+    : "unknown";
+  return `## Seller verification (XRPL XLS-70 + XLS-40)
+- Status: ${status}
+- payTo: ${store.merchantAddress}
+- DID: ${v?.did?.id ?? "none"}${v?.didLinked ? ` → ${origin}${sellerDidDocPath(store.merchantAddress)}` : ""}
+- Do not trust this line: verify on any XRPL node with ledger_entry {credential:{subject: payTo, issuer, credential_type}}.
+- Exact request + issuer: ${origin}/api/seller-verification?address=${store.merchantAddress}
+`;
+}
+
+export function renderLlmsTxt(
+  store: StoreRecord,
+  origin: string,
+  verification?: SellerVerification | null,
+) {
   const base = `${origin}/s/${store.slug}`;
   return `# ${store.name}
 
@@ -29,6 +57,7 @@ Do not scrape HTML. Do not open a checkout page.
 - Reviews (verified purchase): ${base}/reviews.json
 - These instructions: ${base}/llms.txt
 
+${sellerSection(store, origin, verification)}
 ## Checkout rails
 - Rail A x402: POST ${base}/buy
   - Expect HTTP 402 Payment Required with PAYMENT-REQUIRED.
