@@ -370,6 +370,10 @@ function itemToOrder(item: Record<string, unknown>): Order {
     rail: item.rail as Order["rail"],
     txHash: item.txHash ? String(item.txHash) : undefined,
     explorerUrl: item.explorerUrl ? String(item.explorerUrl) : undefined,
+    sentXrp: item.sentXrp ? String(item.sentXrp) : undefined,
+    deliveredRlusd: item.deliveredRlusd
+      ? String(item.deliveredRlusd)
+      : undefined,
     mandate: item.mandate as CardMandate | undefined,
     buyerUid: item.buyerUid ? String(item.buyerUid) : undefined,
     createdAt: String(item.createdAt),

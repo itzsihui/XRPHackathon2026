@@ -48,3 +48,7 @@ ripple/skills/xrpl-agentic-resources/rlusd-skills/
 ripple/skills/xrpl-agentic-resources/x402-secure/
 ripple/skills/xrpl-agentic-resources/xrpl-dev-portal/
 ripple/skills/xrpl-agentic-resources/XRPL-Standards/
+.xrpl-devex/
+.claude/settings.local.json
+
+xrpl-devex-hook/

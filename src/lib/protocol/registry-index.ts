@@ -1,3 +1,4 @@
+import { storePayTo } from "@/lib/config";
 import { enrichFashionMeta } from "@/lib/inventory/fashion";
 import type { StoreRecord } from "@/lib/store/types";
 
@@ -95,7 +96,7 @@ export function buildRegistryIndexEntry(
     listOnMarket: store.listOnMarket !== false,
     ownerUid: store.ownerUid,
     merchantDisplayName: store.merchantDisplayName,
-    merchantAddress: store.merchantAddress,
+    merchantAddress: storePayTo(store),
     skuCount: store.skus.length,
     inStockCount: store.skus.filter((s) => s.quantity > 0).length,
     priceMin: prices.length ? Math.min(...prices) : 0,

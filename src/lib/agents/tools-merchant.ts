@@ -161,6 +161,9 @@ export type MerchantPublishExtras = {
   boundWalletAddress?: string | null;
   /** Appear on /market (default true). From merchant governance. */
   listOnMarket?: boolean;
+  acceptRlusd?: boolean;
+  acceptXrp?: boolean;
+  acceptVisa?: boolean;
 };
 
 function skuMatchKey(sku: Pick<Sku, "title">): string {
@@ -203,9 +206,12 @@ export async function mergeInventoryIntoStore(
     }
   }
 
+  const payTo = resolvePayTo();
   const next: StoreRecord = {
     ...existing,
     name: inventory.name || existing.name,
+    // Keep settle address in sync with MERCHANT_ADDRESS (demo shared wallet).
+    merchantAddress: payTo || existing.merchantAddress,
     ownerUid: extras?.ownerUid || existing.ownerUid,
     merchantDisplayName:
       extras?.merchantDisplayName || existing.merchantDisplayName,
@@ -214,6 +220,18 @@ export async function mergeInventoryIntoStore(
       extras?.listOnMarket !== undefined
         ? extras.listOnMarket !== false
         : existing.listOnMarket !== false,
+    acceptRlusd:
+      extras?.acceptRlusd !== undefined
+        ? extras.acceptRlusd !== false
+        : existing.acceptRlusd !== false,
+    acceptXrp:
+      extras?.acceptXrp !== undefined
+        ? extras.acceptXrp !== false
+        : existing.acceptXrp !== false,
+    acceptVisa:
+      extras?.acceptVisa !== undefined
+        ? extras.acceptVisa !== false
+        : existing.acceptVisa !== false,
     skus: [...byTitle.values()],
     updatedAt: new Date().toISOString(),
   };
@@ -301,6 +319,9 @@ async function publishStore(
         settlementNote: extras.visaReceive.settlementNote?.trim() || undefined,
       },
       listOnMarket: extras.listOnMarket !== false,
+      acceptRlusd: extras.acceptRlusd !== false,
+      acceptXrp: extras.acceptXrp !== false,
+      acceptVisa: extras.acceptVisa !== false,
       slug: publishSlug,
     },
   );
@@ -385,6 +406,9 @@ export async function createStoreTool(args: {
   existingSlug?: string | null;
   boundWalletAddress?: string | null;
   listOnMarket?: boolean;
+  acceptRlusd?: boolean;
+  acceptXrp?: boolean;
+  acceptVisa?: boolean;
 }): Promise<MerchantToolResult> {
   const draft = normalizeDraft(args.draft);
   const auth = args.merchantAuth;
@@ -395,6 +419,9 @@ export async function createStoreTool(args: {
     existingSlug: args.existingSlug,
     boundWalletAddress: args.boundWalletAddress,
     listOnMarket: args.listOnMarket,
+    acceptRlusd: args.acceptRlusd,
+    acceptXrp: args.acceptXrp,
+    acceptVisa: args.acceptVisa,
   };
 
   if (draft && args.prices && args.prices.length > 0) {
@@ -568,6 +595,9 @@ export async function saveDraftToLiveStore(args: {
   visaReceive?: StoreRecord["visaReceive"];
   boundWalletAddress?: string | null;
   listOnMarket?: boolean;
+  acceptRlusd?: boolean;
+  acceptXrp?: boolean;
+  acceptVisa?: boolean;
 }): Promise<MerchantToolResult> {
   const draft = normalizeDraft(args.draft);
   if (!draft) {
@@ -635,6 +665,9 @@ export async function saveDraftToLiveStore(args: {
     existingSlug: args.slug,
     boundWalletAddress: args.boundWalletAddress,
     listOnMarket: args.listOnMarket,
+    acceptRlusd: args.acceptRlusd,
+    acceptXrp: args.acceptXrp,
+    acceptVisa: args.acceptVisa,
   });
   // Return full working sheet (complete + incomplete) after save
   if (published.status === "published") {

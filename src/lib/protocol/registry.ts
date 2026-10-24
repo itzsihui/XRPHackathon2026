@@ -1,4 +1,4 @@
-import { config } from "@/lib/config";
+import { config, storePayTo } from "@/lib/config";
 import { imageForProduct } from "@/lib/market/product-images";
 import type { StoreRecord } from "@/lib/store/types";
 
@@ -37,6 +37,9 @@ export type MarketProduct = {
   visaReceiveLabel?: string;
   visaReceiveId?: string;
   imageUrl: string;
+  acceptRlusd?: boolean;
+  acceptXrp?: boolean;
+  acceptVisa?: boolean;
   attrs?: import("@/lib/store/types").SkuAttrs;
 };
 
@@ -236,10 +239,13 @@ export function flattenMarketProducts(stores: StoreRecord[]): MarketProduct[] {
         storeSlug: store.slug,
         storeName: store.name,
         merchantDisplayName: store.merchantDisplayName,
-        merchantAddress: store.merchantAddress,
+        merchantAddress: storePayTo(store),
         visaReceiveLabel: store.visaReceive?.accountLabel,
         visaReceiveId: store.visaReceive?.receiveId,
         imageUrl: imageForProduct(sku.title, sku.description, sku.id),
+        acceptRlusd: store.acceptRlusd !== false,
+        acceptXrp: store.acceptXrp !== false,
+        acceptVisa: store.acceptVisa !== false,
         attrs: sku.attrs,
       });
     }

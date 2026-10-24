@@ -1,0 +1,90 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"C:/Users/sumit/OneDrive/Desktop/XRPHackathon2026/xrpl-devex-hook/hook/capture.mjs\" --event SessionStart",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"C:/Users/sumit/OneDrive/Desktop/XRPHackathon2026/xrpl-devex-hook/hook/capture.mjs\" --event UserPromptSubmit",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash|apply_patch|Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"C:/Users/sumit/OneDrive/Desktop/XRPHackathon2026/xrpl-devex-hook/hook/capture.mjs\" --event PostToolUse",
+            "timeout": 10
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"C:/Users/sumit/OneDrive/Desktop/XRPHackathon2026/xrpl-devex-hook/hook/capture.mjs\" --event PostToolUse --package-install",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"C:/Users/sumit/OneDrive/Desktop/XRPHackathon2026/xrpl-devex-hook/hook/capture.mjs\" --event Stop",
+            "timeout": 20
+          },
+          {
+            "type": "command",
+            "command": "node \"C:/Users/sumit/OneDrive/Desktop/XRPHackathon2026/xrpl-devex-hook/hook/stop-hook.mjs\"",
+            "timeout": 60
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"C:/Users/sumit/OneDrive/Desktop/XRPHackathon2026/xrpl-devex-hook/hook/capture.mjs\" --event PreCompact",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"C:/Users/sumit/OneDrive/Desktop/XRPHackathon2026/xrpl-devex-hook/hook/capture.mjs\" --event SessionEnd",
+            "timeout": 3
+          }
+        ]
+      }
+    ]
+  },
+  "description": "XRPL DevEx Capture: passive capture and reflection."
+}

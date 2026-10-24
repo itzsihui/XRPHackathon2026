@@ -33,6 +33,9 @@ export async function runMerchantAgent(args: {
   existingSlug?: string | null;
   boundWalletAddress?: string | null;
   listOnMarket?: boolean;
+  acceptRlusd?: boolean;
+  acceptXrp?: boolean;
+  acceptVisa?: boolean;
 }): Promise<{
   store: StoreRecord | null;
   reply: string;
@@ -49,6 +52,9 @@ export async function runMerchantAgent(args: {
     existingSlug: args.existingSlug,
     boundWalletAddress: args.boundWalletAddress,
     listOnMarket: args.listOnMarket,
+    acceptRlusd: args.acceptRlusd,
+    acceptXrp: args.acceptXrp,
+    acceptVisa: args.acceptVisa,
   };
 
   if (draft && args.prices && args.prices.length > 0) {

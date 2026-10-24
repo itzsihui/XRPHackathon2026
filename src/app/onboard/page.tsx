@@ -215,6 +215,9 @@ export default function OnboardPage() {
           boundWalletAddress,
           listOnMarket:
             merchant.profile?.governance?.listOnMarket !== false,
+          acceptRlusd: merchant.profile?.governance?.acceptUsdc !== false,
+          acceptXrp: merchant.profile?.governance?.acceptXrp !== false,
+          acceptVisa: merchant.profile?.governance?.acceptVisa !== false,
         }),
       });
       const raw = await res.text();
@@ -542,6 +545,9 @@ export default function OnboardPage() {
           boundWalletAddress,
           listOnMarket:
             merchant.profile?.governance?.listOnMarket !== false,
+          acceptRlusd: merchant.profile?.governance?.acceptUsdc !== false,
+          acceptXrp: merchant.profile?.governance?.acceptXrp !== false,
+          acceptVisa: merchant.profile?.governance?.acceptVisa !== false,
         }),
       });
       const data = (await res.json()) as {

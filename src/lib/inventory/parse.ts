@@ -956,6 +956,9 @@ export function toStore(
     merchantDisplayName?: string;
     visaReceive?: StoreRecord["visaReceive"];
     listOnMarket?: boolean;
+    acceptRlusd?: boolean;
+    acceptXrp?: boolean;
+    acceptVisa?: boolean;
     /** Force slug (e.g. re-publish after catalog miss). */
     slug?: string;
   },
@@ -968,6 +971,9 @@ export function toStore(
     merchantAddress,
     visaReceive: extras?.visaReceive,
     listOnMarket: extras?.listOnMarket !== false,
+    acceptRlusd: extras?.acceptRlusd !== false,
+    acceptXrp: extras?.acceptXrp !== false,
+    acceptVisa: extras?.acceptVisa !== false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
     skus: parsed.skus.map((sku, index) => {

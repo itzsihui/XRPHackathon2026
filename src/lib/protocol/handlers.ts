@@ -1,4 +1,10 @@
-import { config, explorerTx, fromAtomic, toAtomic } from "@/lib/config";
+import {
+  config,
+  explorerTx,
+  fromAtomic,
+  storePayTo,
+  toAtomic,
+} from "@/lib/config";
 import { renderAgentCard } from "@/lib/protocol/agent-card";
 import { renderCatalog } from "@/lib/protocol/catalog";
 import { emit } from "@/lib/protocol/events";
@@ -145,7 +151,7 @@ export async function handleBuy(slug: string, request: Request) {
       store: slug,
       orderId,
       rail: "x402",
-      message: `HTTP 402 ${fromAtomic(amountAtomic)} ${config.tokenSymbol} to ${store.merchantAddress}`,
+      message: `HTTP 402 ${fromAtomic(amountAtomic)} ${config.tokenSymbol} to ${storePayTo(store)}`,
     });
     return new Response(JSON.stringify(requirements, null, 2), {
       status: 402,
@@ -260,7 +266,7 @@ export async function handleCheckout(slug: string, request: Request) {
   const allowed = await assertMandateAllows({
     mandate,
     storeSlug: store.slug,
-    merchantAddress: store.merchantAddress,
+    merchantAddress: storePayTo(store),
     amount: sku.price,
     quantity,
   });
@@ -342,12 +348,14 @@ function receipt(order: Order, store?: StoreRecord | null) {
     txHash: order.txHash,
     explorerUrl:
       order.explorerUrl ?? (order.txHash ? explorerTx(order.txHash) : undefined),
+    sentXrp: order.sentXrp,
+    deliveredRlusd: order.deliveredRlusd,
     mandate: order.mandate,
     paidAt: order.paidAt,
     merchant: store
       ? {
           displayName: store.merchantDisplayName,
-          cryptoReceive: store.merchantAddress,
+          cryptoReceive: storePayTo(store),
           visaReceive: store.visaReceive,
         }
       : undefined,

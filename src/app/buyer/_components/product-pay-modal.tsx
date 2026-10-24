@@ -6,6 +6,12 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { MarketProductPick, PaymentRail } from "../_lib/buyer-flow";
 
+type FxQuoteState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "ok"; xrpDisplay: string; deliverRlusd: string }
+  | { status: "unavailable"; reason: string };
+
 export function ProductPayModal({
   open,
   product,
@@ -16,6 +22,9 @@ export function ProductPayModal({
   busy,
   receiptNote,
   firstVisaIssue,
+  acceptRlusd = true,
+  acceptXrp = true,
+  acceptVisa = true,
 }: {
   open: boolean;
   product: MarketProductPick | null;
@@ -27,12 +36,17 @@ export function ProductPayModal({
   receiptNote?: string | null;
   /** True when buyer has never completed a Visa checkout in this demo account. */
   firstVisaIssue?: boolean;
+  acceptRlusd?: boolean;
+  acceptXrp?: boolean;
+  acceptVisa?: boolean;
 }) {
   const [step, setStep] = useState<"detail" | "confirm">("detail");
+  const [fx, setFx] = useState<FxQuoteState>({ status: "idle" });
 
   useEffect(() => {
     if (!open) {
       setStep("detail");
+      setFx({ status: "idle" });
       return;
     }
     const onKey = (e: KeyboardEvent) => {
@@ -42,9 +56,77 @@ export function ProductPayModal({
     return () => window.removeEventListener("keydown", onKey);
   }, [open, busy, onClose]);
 
+  useEffect(() => {
+    if (!open || !product || rail !== "xrp" || !acceptXrp) {
+      if (rail !== "xrp") setFx({ status: "idle" });
+      return;
+    }
+
+    const amount = product.price;
+    const to = product.merchantAddress?.trim();
+    if (!to) {
+      setFx({
+        status: "unavailable",
+        reason: "Merchant wallet missing",
+      });
+      return;
+    }
+
+    let cancelled = false;
+    setFx({ status: "loading" });
+    const timer = window.setTimeout(() => {
+      void (async () => {
+        try {
+          const res = await fetch(
+            `/api/fx-quote?amount=${encodeURIComponent(amount)}&to=${encodeURIComponent(to)}`,
+          );
+          const data = (await res.json()) as {
+            ok?: boolean;
+            xrpDisplay?: string;
+            deliverRlusd?: string;
+            reason?: string;
+          };
+          if (cancelled) return;
+          if (!data.ok || !data.xrpDisplay) {
+            setFx({
+              status: "unavailable",
+              reason: data.reason || "XRP path unavailable",
+            });
+            return;
+          }
+          setFx({
+            status: "ok",
+            xrpDisplay: data.xrpDisplay,
+            deliverRlusd: data.deliverRlusd || amount,
+          });
+        } catch {
+          if (!cancelled) {
+            setFx({
+              status: "unavailable",
+              reason: "Could not quote XRP",
+            });
+          }
+        }
+      })();
+    }, 120);
+
+    return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
+    };
+  }, [open, product, rail, acceptXrp]);
+
   if (!open || !product) return null;
 
-  const isVisa = rail === "visa";
+  const xrpReady = rail === "xrp" && fx.status === "ok";
+  const xrpBlocked =
+    rail === "xrp" &&
+    (fx.status === "unavailable" || fx.status === "loading" || fx.status === "idle");
+  const canContinue =
+    !!rail &&
+    !(rail === "xrp" && !xrpReady) &&
+    !(rail === "stablecoin" && !acceptRlusd) &&
+    !(rail === "visa" && !acceptVisa);
 
   return (
     <div
@@ -123,50 +205,71 @@ export function ProductPayModal({
           ) : null}
 
           {step === "detail" ? (
-            <div className="mt-5 space-y-2">
+            <div className="mt-5 space-y-3">
               <p className="text-xs font-medium uppercase tracking-wide text-foreground/50">
                 Pay with
               </p>
-              <div className="grid gap-2 sm:grid-cols-2">
-                <button
-                  type="button"
-                  disabled={busy}
-                  onClick={() => onRailChange("visa")}
-                  className={cn(
-                    "rounded-lg border p-3 text-left text-sm transition-colors",
-                    rail === "visa"
-                      ? "border-foreground ring-1 ring-foreground"
-                      : "border-border hover:border-foreground/40",
-                  )}
-                >
-                  <span className="font-medium">Visa card</span>
-                  <span className="mt-0.5 block text-xs text-foreground/55">
-                    {product.visaReceiveLabel
-                      ? `Settles to ${product.visaReceiveLabel}`
-                      : firstVisaIssue
-                        ? "Issue a scoped card and pay"
-                        : "Agent-authorized scoped card"}
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  disabled={busy}
-                  onClick={() => onRailChange("stablecoin")}
-                  className={cn(
-                    "rounded-lg border p-3 text-left text-sm transition-colors",
-                    rail === "stablecoin"
-                      ? "border-foreground ring-1 ring-foreground"
-                      : "border-border hover:border-foreground/40",
-                  )}
-                >
-                  <span className="font-medium">RLUSD · x402</span>
-                  <span className="mt-0.5 block text-xs text-foreground/55">
-                    {product.merchantAddress
-                      ? `To ${product.merchantAddress.slice(0, 6)}…${product.merchantAddress.slice(-4)}`
-                      : "XRPL Testnet stablecoin"}
-                  </span>
-                </button>
+              <div className="grid grid-cols-3 gap-2">
+                {acceptRlusd ? (
+                  <RailChip
+                    selected={rail === "stablecoin"}
+                    disabled={busy}
+                    title="RLUSD"
+                    subtitle="x402"
+                    onClick={() => onRailChange("stablecoin")}
+                  />
+                ) : null}
+                {acceptXrp ? (
+                  <RailChip
+                    selected={rail === "xrp"}
+                    disabled={busy}
+                    title="XRP"
+                    subtitle={
+                      fx.status === "ok"
+                        ? `≈${fx.xrpDisplay}`
+                        : fx.status === "unavailable"
+                          ? "n/a"
+                          : rail === "xrp"
+                            ? "…"
+                            : "AMM"
+                    }
+                    onClick={() => onRailChange("xrp")}
+                  />
+                ) : null}
+                {acceptVisa ? (
+                  <RailChip
+                    selected={rail === "visa"}
+                    disabled={busy}
+                    title="Visa"
+                    subtitle="card"
+                    onClick={() => onRailChange("visa")}
+                  />
+                ) : null}
               </div>
+
+              {rail === "xrp" ? (
+                <FxStrip
+                  fx={fx}
+                  deliverFallback={product.price}
+                />
+              ) : rail === "stablecoin" ? (
+                <p className="rounded-md border border-border bg-muted/30 px-3 py-2 text-[13px] text-foreground/70">
+                  You pay{" "}
+                  <strong>
+                    {product.price} RLUSD
+                  </strong>
+                  {" · "}
+                  merchant receives the same
+                </p>
+              ) : rail === "visa" ? (
+                <p className="rounded-md border border-border bg-muted/30 px-3 py-2 text-[13px] text-foreground/70">
+                  {firstVisaIssue
+                    ? "Issue a scoped Visa card, then pay this quote."
+                    : product.visaReceiveLabel
+                      ? `Settles to ${product.visaReceiveLabel}`
+                      : "Agent-authorized scoped card"}
+                </p>
+              ) : null}
             </div>
           ) : (
             <div className="mt-5 space-y-3">
@@ -190,15 +293,27 @@ export function ProductPayModal({
                     </dd>
                   </div>
                   <div className="flex justify-between gap-3">
-                    <dt className="text-foreground/45">Amount</dt>
+                    <dt className="text-foreground/45">Deliver</dt>
                     <dd className="text-right text-foreground">
                       {product.price} RLUSD
                     </dd>
                   </div>
+                  {rail === "xrp" && fx.status === "ok" ? (
+                    <div className="flex justify-between gap-3">
+                      <dt className="text-foreground/45">You send</dt>
+                      <dd className="text-right text-foreground">
+                        ≈ {fx.xrpDisplay} XRP
+                      </dd>
+                    </div>
+                  ) : null}
                   <div className="flex justify-between gap-3">
                     <dt className="text-foreground/45">Rail</dt>
                     <dd className="text-right text-foreground">
-                      {isVisa ? "Visa scoped card" : "RLUSD · x402"}
+                      {rail === "visa"
+                        ? "Visa scoped card"
+                        : rail === "xrp"
+                          ? "XRP → RLUSD (AMM)"
+                          : "RLUSD · x402"}
                     </dd>
                   </div>
                   <div className="flex justify-between gap-3">
@@ -213,35 +328,44 @@ export function ProductPayModal({
                 </p>
               </div>
               <div className="rounded-md border border-border bg-muted/20 px-3 py-2.5 text-[13px] leading-relaxed text-foreground/75">
-              {isVisa ? (
-                <>
-                  {firstVisaIssue ? (
-                    <p className="mb-2">
-                      A scoped Visa card will be issued for this merchant, then
-                      burned after payment.
-                    </p>
-                  ) : null}
-                  Confirm Visa checkout: spend cap ≥{" "}
-                  <strong>{product.price}</strong> RLUSD · merchant receive{" "}
-                  <strong>
-                    {product.visaReceiveLabel || product.storeSlug}
-                  </strong>
-                  {product.visaReceiveId
-                    ? ` (${product.visaReceiveId})`
-                    : ""}
-                  . The agent will not charge until you authorize.
-                </>
-              ) : (
-                <>
-                  Confirm x402 on XRPL Testnet: transfer{" "}
-                  <strong>{product.price}</strong> RLUSD to merchant crypto
-                  receive{" "}
-                  <span className="font-mono text-xs">
-                    {product.merchantAddress || "store payTo"}
-                  </span>{" "}
-                  after HTTP 402, then unlock with PAYMENT-SIGNATURE.
-                </>
-              )}
+                {rail === "visa" ? (
+                  <>
+                    {firstVisaIssue ? (
+                      <p className="mb-2">
+                        A scoped Visa card will be issued for this merchant, then
+                        burned after payment.
+                      </p>
+                    ) : null}
+                    Confirm Visa checkout: spend cap ≥{" "}
+                    <strong>{product.price}</strong> RLUSD · merchant receive{" "}
+                    <strong>
+                      {product.visaReceiveLabel || product.storeSlug}
+                    </strong>
+                    {product.visaReceiveId
+                      ? ` (${product.visaReceiveId})`
+                      : ""}
+                    . The agent will not charge until you authorize.
+                  </>
+                ) : rail === "xrp" ? (
+                  <>
+                    Confirm cross-currency Payment: spend ≈{" "}
+                    <strong>
+                      {fx.status === "ok" ? fx.xrpDisplay : "…"} XRP
+                    </strong>
+                    , merchant receives{" "}
+                    <strong>{product.price} RLUSD</strong> via XRPL AMM/DEX.
+                  </>
+                ) : (
+                  <>
+                    Confirm x402 on XRPL Testnet: transfer{" "}
+                    <strong>{product.price}</strong> RLUSD to merchant crypto
+                    receive{" "}
+                    <span className="font-mono text-xs">
+                      {product.merchantAddress || "store payTo"}
+                    </span>{" "}
+                    after HTTP 402, then unlock with PAYMENT-SIGNATURE.
+                  </>
+                )}
               </div>
             </div>
           )}
@@ -266,7 +390,7 @@ export function ProductPayModal({
           {step === "detail" ? (
             <Button
               type="button"
-              disabled={busy || !rail}
+              disabled={busy || !canContinue || xrpBlocked}
               onClick={() => setStep("confirm")}
             >
               Continue to pay
@@ -274,7 +398,7 @@ export function ProductPayModal({
           ) : (
             <Button
               type="button"
-              disabled={busy || !rail}
+              disabled={busy || !canContinue}
               onClick={onPay}
             >
               {busy
@@ -286,6 +410,75 @@ export function ProductPayModal({
           )}
         </div>
       </div>
+    </div>
+  );
+}
+
+function RailChip({
+  selected,
+  disabled,
+  title,
+  subtitle,
+  onClick,
+}: {
+  selected: boolean;
+  disabled?: boolean;
+  title: string;
+  subtitle: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      disabled={disabled}
+      onClick={onClick}
+      className={cn(
+        "rounded-lg border px-2 py-2.5 text-center transition-colors",
+        selected
+          ? "border-foreground ring-1 ring-foreground bg-muted/40"
+          : "border-border hover:border-foreground/40",
+      )}
+    >
+      <span className="block text-sm font-medium leading-tight">{title}</span>
+      <span className="mt-0.5 block truncate text-[11px] text-foreground/55">
+        {subtitle}
+      </span>
+    </button>
+  );
+}
+
+function FxStrip({
+  fx,
+  deliverFallback,
+}: {
+  fx: FxQuoteState;
+  deliverFallback: string;
+}) {
+  if (fx.status === "loading" || fx.status === "idle") {
+    return (
+      <p className="rounded-md border border-border bg-muted/30 px-3 py-2 text-[13px] text-foreground/55">
+        Quoting XRP→RLUSD via AMM…
+      </p>
+    );
+  }
+  if (fx.status === "unavailable") {
+    return (
+      <p className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-[13px] text-foreground/70">
+        XRP unavailable — {fx.reason}. Pick RLUSD or Visa.
+      </p>
+    );
+  }
+  return (
+    <div className="rounded-md border border-border bg-muted/30 px-3 py-2 text-[13px] leading-relaxed text-foreground/75">
+      <p>
+        You pay ≈ <strong>{fx.xrpDisplay} XRP</strong>
+      </p>
+      <p className="mt-0.5">
+        Merchant receives{" "}
+        <strong>
+          {fx.deliverRlusd || deliverFallback} RLUSD
+        </strong>
+      </p>
     </div>
   );
 }

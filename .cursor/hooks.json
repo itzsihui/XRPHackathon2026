@@ -1,9 +1,66 @@
 {
   "version": 1,
   "hooks": {
+    "sessionStart": [
+      {
+        "command": "node \"C:/Users/sumit/OneDrive/Desktop/XRPHackathon2026/xrpl-devex-hook/hook/agents/cursor/capture.mjs\" --event SessionStart",
+        "timeout": 10
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": "node \"C:/Users/sumit/OneDrive/Desktop/XRPHackathon2026/xrpl-devex-hook/hook/agents/cursor/capture.mjs\" --event UserPromptSubmit",
+        "timeout": 10
+      }
+    ],
+    "afterShellExecution": [
+      {
+        "command": "node \"C:/Users/sumit/OneDrive/Desktop/XRPHackathon2026/xrpl-devex-hook/hook/agents/cursor/capture.mjs\" --event PostToolUse",
+        "timeout": 10
+      },
+      {
+        "command": "node \"C:/Users/sumit/OneDrive/Desktop/XRPHackathon2026/xrpl-devex-hook/hook/agents/cursor/capture.mjs\" --event PostToolUse --package-install",
+        "timeout": 10
+      }
+    ],
+    "afterMCPExecution": [
+      {
+        "command": "node \"C:/Users/sumit/OneDrive/Desktop/XRPHackathon2026/xrpl-devex-hook/hook/agents/cursor/capture.mjs\" --event PostToolUse",
+        "timeout": 10
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": "node \"C:/Users/sumit/OneDrive/Desktop/XRPHackathon2026/xrpl-devex-hook/hook/agents/cursor/capture.mjs\" --event PostToolUse",
+        "timeout": 10
+      }
+    ],
+    "postToolUseFailure": [
+      {
+        "command": "node \"C:/Users/sumit/OneDrive/Desktop/XRPHackathon2026/xrpl-devex-hook/hook/agents/cursor/capture.mjs\" --event PostToolUseFailure",
+        "timeout": 10
+      }
+    ],
+    "preCompact": [
+      {
+        "command": "node \"C:/Users/sumit/OneDrive/Desktop/XRPHackathon2026/xrpl-devex-hook/hook/agents/cursor/capture.mjs\" --event PreCompact",
+        "timeout": 10
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": "node \"C:/Users/sumit/OneDrive/Desktop/XRPHackathon2026/xrpl-devex-hook/hook/agents/cursor/capture.mjs\" --event SessionEnd",
+        "timeout": 10
+      }
+    ],
     "stop": [
       {
-        "command": "node C:/Users/sumit/OneDrive/Desktop/SingHacks2026/hook/agents/cursor/stop-hook.mjs",
+        "command": "node \"C:/Users/sumit/OneDrive/Desktop/XRPHackathon2026/xrpl-devex-hook/hook/agents/cursor/capture.mjs\" --event Stop",
+        "timeout": 20
+      },
+      {
+        "command": "node \"C:/Users/sumit/OneDrive/Desktop/XRPHackathon2026/xrpl-devex-hook/hook/agents/cursor/stop-hook.mjs\"",
+        "timeout": 15,
         "loop_limit": 2
       }
     ]

@@ -25,6 +25,8 @@ export type VisaReceiveAccount = {
 export type MerchantGovernance = {
   /** Accept RLUSD / x402 settlements on XRPL */
   acceptUsdc: boolean;
+  /** Accept XRP pay-in (converted to RLUSD via AMM/DEX) */
+  acceptXrp: boolean;
   /** Accept Visa scoped-card rail */
   acceptVisa: boolean;
   /** Floor unit price agents must respect (RLUSD) */
@@ -40,6 +42,7 @@ export type MerchantGovernance = {
 
 export const DEFAULT_MERCHANT_GOVERNANCE: MerchantGovernance = {
   acceptUsdc: true,
+  acceptXrp: true,
   acceptVisa: true,
   minUnitPriceUsdc: null,
   maxUnitsPerOrder: null,
@@ -79,6 +82,7 @@ function normalizeGovernance(
   if (!raw || typeof raw !== "object") return undefined;
   return {
     acceptUsdc: raw.acceptUsdc !== false,
+    acceptXrp: raw.acceptXrp !== false,
     acceptVisa: raw.acceptVisa !== false,
     minUnitPriceUsdc:
       raw.minUnitPriceUsdc != null && Number.isFinite(Number(raw.minUnitPriceUsdc))

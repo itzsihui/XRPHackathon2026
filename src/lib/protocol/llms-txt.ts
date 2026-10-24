@@ -1,4 +1,4 @@
-import { config } from "@/lib/config";
+import { config, storePayTo } from "@/lib/config";
 import type { StoreRecord } from "@/lib/store/types";
 
 export function originFromRequest(request: Request) {
@@ -46,6 +46,6 @@ Do not scrape HTML. Do not open a checkout page.
 - Asset: ${config.tokenAddress}
 - Issuer: ${config.tokenIssuer}
 - Network: ${config.network}
-- Merchant payTo: ${store.merchantAddress}
+- Merchant payTo: ${storePayTo(store)}
 `;
 }

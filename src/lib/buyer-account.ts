@@ -21,7 +21,7 @@ export type SpendEvent = {
   id: string;
   at: string;
   amount: number;
-  rail: "x402" | "straitsx-card";
+  rail: "x402" | "straitsx-card" | "xrpl-xrp";
   title: string;
   storeSlug?: string;
   storeName?: string;
@@ -30,8 +30,12 @@ export type SpendEvent = {
   merchantReceive?: string;
   skuId?: string;
   imageUrl?: string;
-  /** XRPL explorer (or explorer) link for RLUSD / x402 settlements */
+  /** XRPL explorer (or explorer) link for RLUSD / x402 / XRP settlements */
   explorerUrl?: string;
+  /** When rail is xrpl-xrp: XRP spent (display). */
+  sentXrp?: string;
+  /** When rail is xrpl-xrp: RLUSD merchant received. */
+  deliveredRlusd?: string;
   orderId?: string;
   /** Visa mandate proof */
   cardOpaqueId?: string;
@@ -125,11 +129,17 @@ function canUseStorage() {
 }
 
 function normalizeSpendEvent(raw: Partial<SpendEvent> & { at?: string }): SpendEvent {
+  const rail: SpendEvent["rail"] =
+    raw.rail === "straitsx-card"
+      ? "straitsx-card"
+      : raw.rail === "xrpl-xrp"
+        ? "xrpl-xrp"
+        : "x402";
   return {
     id: raw.id || `spend_${raw.at || Date.now()}`,
     at: raw.at || new Date().toISOString(),
     amount: Number(raw.amount) || 0,
-    rail: raw.rail === "straitsx-card" ? "straitsx-card" : "x402",
+    rail,
     title: String(raw.title || "Purchase"),
     storeSlug: raw.storeSlug ? String(raw.storeSlug) : undefined,
     storeName: raw.storeName ? String(raw.storeName) : undefined,
@@ -142,6 +152,8 @@ function normalizeSpendEvent(raw: Partial<SpendEvent> & { at?: string }): SpendE
     skuId: raw.skuId ? String(raw.skuId) : undefined,
     imageUrl: raw.imageUrl ? String(raw.imageUrl) : undefined,
     explorerUrl: raw.explorerUrl ? String(raw.explorerUrl) : undefined,
+    sentXrp: raw.sentXrp ? String(raw.sentXrp) : undefined,
+    deliveredRlusd: raw.deliveredRlusd ? String(raw.deliveredRlusd) : undefined,
     orderId: raw.orderId ? String(raw.orderId) : undefined,
     cardOpaqueId: raw.cardOpaqueId ? String(raw.cardOpaqueId) : undefined,
     truncatedPan: raw.truncatedPan ? String(raw.truncatedPan) : undefined,
@@ -490,7 +502,7 @@ export function evaluatePolicy(
 
 export function recordSpend(args: {
   amount: number;
-  rail: "x402" | "straitsx-card";
+  rail: "x402" | "straitsx-card" | "xrpl-xrp";
   title: string;
   storeSlug?: string;
   storeName?: string;
@@ -499,6 +511,8 @@ export function recordSpend(args: {
   skuId?: string;
   imageUrl?: string;
   explorerUrl?: string;
+  sentXrp?: string;
+  deliveredRlusd?: string;
   orderId?: string;
   cardOpaqueId?: string;
   truncatedPan?: string;
@@ -521,6 +535,8 @@ export function recordSpend(args: {
     skuId: args.skuId,
     imageUrl: args.imageUrl,
     explorerUrl: args.explorerUrl,
+    sentXrp: args.sentXrp,
+    deliveredRlusd: args.deliveredRlusd,
     orderId: args.orderId,
     cardOpaqueId: args.cardOpaqueId,
     truncatedPan: args.truncatedPan,
@@ -550,7 +566,9 @@ export function markSpendReviewed(args: {
 }
 
 export function railLabel(rail: SpendEvent["rail"]) {
-  return rail === "x402" ? "RLUSD · x402" : "Visa card";
+  if (rail === "xrpl-xrp") return "XRP → RLUSD";
+  if (rail === "straitsx-card") return "Visa card";
+  return "RLUSD · x402";
 }
 
 export function markCardIssued(args: {

@@ -1,3 +1,4 @@
+import { storePayTo } from "@/lib/config";
 import type { StoreRecord } from "@/lib/store/types";
 import { repo } from "@/lib/store/repo";
 
@@ -129,7 +130,7 @@ export async function resolveBuyerTarget(args: {
       ok: true,
       slug: store.slug,
       sku: { id: sku.id, title: sku.title, price: sku.price },
-      merchantAddress: store.merchantAddress,
+      merchantAddress: storePayTo(store),
       via: "quote",
     };
   }
@@ -148,7 +149,7 @@ export async function resolveBuyerTarget(args: {
         ok: true,
         slug: store.slug,
         sku: { id: first.id, title: first.title, price: first.price },
-        merchantAddress: store.merchantAddress,
+        merchantAddress: storePayTo(store),
         via: "slug",
       };
     }
@@ -168,7 +169,7 @@ export async function resolveBuyerTarget(args: {
       ok: true,
       slug: store.slug,
       sku: { id: best.sku.id, title: best.sku.title, price: best.sku.price },
-      merchantAddress: store.merchantAddress,
+      merchantAddress: storePayTo(store),
       via: "slug",
     };
   }
@@ -195,7 +196,7 @@ export async function resolveBuyerTarget(args: {
       ok: true,
       slug: store.slug,
       sku: { id: first.id, title: first.title, price: first.price },
-      merchantAddress: store.merchantAddress,
+      merchantAddress: storePayTo(store),
       via: "registry",
     };
   }
@@ -231,7 +232,7 @@ export async function resolveBuyerTarget(args: {
     ok: true,
     slug: best.store.slug,
     sku: { id: best.sku.id, title: best.sku.title, price: best.sku.price },
-    merchantAddress: best.store.merchantAddress,
+    merchantAddress: storePayTo(best.store),
     via: "registry",
   };
 }

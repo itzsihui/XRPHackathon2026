@@ -1,3 +1,4 @@
+import { storePayTo } from "@/lib/config";
 import {
   filterMarketProducts,
   flattenMarketProducts,
@@ -27,7 +28,7 @@ export async function GET(request: Request) {
         name: s.name,
         skuCount: s.skus.length,
         merchantDisplayName: s.merchantDisplayName,
-        merchantAddress: s.merchantAddress,
+        merchantAddress: storePayTo(s),
         visaReceive: s.visaReceive,
         listOnMarket: s.listOnMarket !== false,
       })),

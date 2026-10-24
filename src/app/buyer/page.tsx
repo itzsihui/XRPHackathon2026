@@ -956,7 +956,9 @@ export default function BuyerPage() {
             title:
               rail === "visa"
                 ? `Settling Visa · ${lines.length} locked quote(s)`
-                : `Settling RLUSD x402 · ${lines.length} locked quote(s)`,
+                : rail === "xrp"
+                  ? `Settling XRP→RLUSD · ${lines.length} locked quote(s)`
+                  : `Settling RLUSD x402 · ${lines.length} locked quote(s)`,
             status: "active",
             capability: "privileged",
             description: "Authorized — each SKU settles on its locked quote…",
@@ -1033,6 +1035,70 @@ export default function BuyerPage() {
               if (explorer) {
                 links.push({
                   label: `XRPL explorer · ${skuId}`,
+                  href: explorer,
+                });
+              }
+            } else if (rail === "xrp") {
+              const res = await fetch("/api/fx-settle", {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({
+                  storeSlug: quote.storeSlug,
+                  skuId: quote.skuId,
+                  quantity: 1,
+                  buyerUid: getBuyerCloudSyncUid() || undefined,
+                }),
+              });
+              const data = (await res.json()) as {
+                steps?: Array<{ type: string; text: string }>;
+                error?: string;
+                receipt?: {
+                  explorerUrl?: string;
+                  orderId?: string;
+                  sentXrp?: string;
+                  deliveredRlusd?: string;
+                };
+              };
+              if (
+                (data.steps ?? []).some((s) => s.type === "error") ||
+                !(data.steps ?? []).some((s) => s.type === "success")
+              ) {
+                const errStep = (data.steps ?? []).find((s) => s.type === "error");
+                throw new Error(
+                  errStep?.text || data.error || "XRP→RLUSD settlement failed",
+                );
+              }
+              const explorer =
+                data.receipt?.explorerUrl ||
+                (data.steps ?? []).find(
+                  (s) =>
+                    s.type === "success" && /^https?:\/\//i.test(s.text.trim()),
+                )?.text.trim();
+              const fxNote = (data.steps ?? []).find(
+                (s) =>
+                  s.type === "success" &&
+                  /spent .+ XRP · merchant received/i.test(s.text),
+              )?.text;
+              recordSpend({
+                amount: unit,
+                rail: "xrpl-xrp",
+                title: line.title,
+                storeSlug: line.storeSlug,
+                storeName: line.storeName,
+                merchantDisplayName: line.merchantDisplayName,
+                merchantReceive: line.merchantAddress,
+                skuId,
+                imageUrl: line.imageUrl,
+                explorerUrl: explorer,
+                sentXrp: data.receipt?.sentXrp,
+                deliveredRlusd: data.receipt?.deliveredRlusd,
+                orderId: data.receipt?.orderId,
+              });
+              if (explorer) {
+                links.push({
+                  label: fxNote
+                    ? `XRPL · ${fxNote.replace(/^Paid ·\s*/i, "")}`
+                    : `XRPL explorer · ${skuId}`,
                   href: explorer,
                 });
               }
@@ -1126,7 +1192,9 @@ export default function BuyerPage() {
             description:
               rail === "visa"
                 ? "Visa settles complete"
-                : "x402 settles complete",
+                : rail === "xrp"
+                  ? "XRP→RLUSD settles complete"
+                  : "x402 settles complete",
             links: links.slice(0, 4),
           }),
         }));
@@ -1305,6 +1373,9 @@ export default function BuyerPage() {
           busy={state.busy}
           receiptNote={receiptNote}
           firstVisaIssue={!cardIssued}
+          acceptRlusd={selected?.acceptRlusd !== false}
+          acceptXrp={selected?.acceptXrp !== false}
+          acceptVisa={selected?.acceptVisa !== false}
           onRailChange={(rail) =>
             setState((prev) => ({ ...prev, rail, error: null }))
           }
@@ -1325,6 +1396,9 @@ export default function BuyerPage() {
           }))}
           rail={state.rail}
           busy={state.busy}
+          acceptRlusd={state.cart.every((p) => p.acceptRlusd !== false)}
+          acceptXrp={state.cart.every((p) => p.acceptXrp !== false)}
+          acceptVisa={state.cart.every((p) => p.acceptVisa !== false)}
           onRailChange={(rail) =>
             setState((prev) => ({ ...prev, rail, error: null }))
           }
@@ -1334,7 +1408,7 @@ export default function BuyerPage() {
           onPay={() => void authorizeCart()}
         />
 
-        {state.rail === "stablecoin" &&
+        {(state.rail === "stablecoin" || state.rail === "xrp") &&
         (state.phase === "settle" || state.phase === "done") ? (
           <ProtocolLog className="max-h-32 shrink-0 overflow-auto" />
         ) : null}

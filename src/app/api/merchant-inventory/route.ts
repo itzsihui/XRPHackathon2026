@@ -23,6 +23,9 @@ export async function POST(request: Request) {
       };
       boundWalletAddress?: string | null;
       listOnMarket?: boolean;
+      acceptRlusd?: boolean;
+      acceptXrp?: boolean;
+      acceptVisa?: boolean;
     };
 
     const slug = String(body.slug || "").trim();
@@ -47,6 +50,9 @@ export async function POST(request: Request) {
       visaReceive: body.visaReceive,
       boundWalletAddress: body.boundWalletAddress,
       listOnMarket: body.listOnMarket,
+      acceptRlusd: body.acceptRlusd,
+      acceptXrp: body.acceptXrp,
+      acceptVisa: body.acceptVisa,
     });
 
     return Response.json(result);

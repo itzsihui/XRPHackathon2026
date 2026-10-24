@@ -8,21 +8,21 @@ const RAILS: Array<{
   id: PaymentRail;
   title: string;
   subtitle: string;
-  detail: string;
 }> = [
   {
-    id: "visa",
-    title: "Visa card (agent-authorized)",
-    subtitle: "Fiat · simulated Visa scoped card",
-    detail:
-      "Hackathon Visa rail: issue a spend-capped virtual card, checkout in-chat, then burn the mandate — no redirect.",
+    id: "stablecoin",
+    title: "RLUSD",
+    subtitle: "Exact stablecoin · x402",
   },
   {
-    id: "stablecoin",
-    title: "RLUSD on XRPL Testnet",
-    subtitle: "Stablecoin · x402 handshake",
-    detail:
-      "HTTP 402 challenge → on-chain RLUSD transfer on XRPL Testnet → retry with PAYMENT-SIGNATURE — no redirect.",
+    id: "xrp",
+    title: "XRP",
+    subtitle: "Converted to RLUSD via AMM",
+  },
+  {
+    id: "visa",
+    title: "Visa",
+    subtitle: "Scoped card · agent-authorized",
   },
 ];
 
@@ -46,11 +46,12 @@ export function PaymentRailPicker({
           How do you want to pay?
         </h2>
         <p className="mt-1 text-xs text-foreground/55">
-          Pick one rail — you will confirm before the agent transacts.
+          Merchant always receives RLUSD. Pick your pay-in — confirm before the
+          agent settles.
         </p>
       </div>
 
-      <div className="grid gap-2 p-4 sm:grid-cols-2">
+      <div className="grid gap-2 p-4 sm:grid-cols-3">
         {RAILS.map((rail) => {
           const selected = value === rail.id;
           return (
@@ -60,7 +61,7 @@ export function PaymentRailPicker({
               disabled={disabled}
               onClick={() => onChange(rail.id)}
               className={cn(
-                "rounded-lg border p-4 text-left transition-colors",
+                "rounded-lg border p-3 text-left transition-colors",
                 selected
                   ? "border-foreground bg-muted/50 ring-1 ring-foreground"
                   : "border-border hover:border-foreground/40",
@@ -68,9 +69,6 @@ export function PaymentRailPicker({
             >
               <p className="text-sm font-medium">{rail.title}</p>
               <p className="mt-1 text-xs text-foreground/55">{rail.subtitle}</p>
-              <p className="mt-2 text-[13px] leading-relaxed text-foreground/70">
-                {rail.detail}
-              </p>
             </button>
           );
         })}

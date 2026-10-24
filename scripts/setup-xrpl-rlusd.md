@@ -124,7 +124,9 @@ Or use the [XRPL Testnet faucet UI](https://xrpl.org/resources/dev-tools/xrp-fau
 ### TrustSet
 
 ```bash
-node scripts/xrpl-trustset.mjs --seed "$XRPL_BUYER_SEED"
+# Use tsx — plain `node` hits ERR_REQUIRE_ESM with xrpl@5
+npx tsx scripts/xrpl-trustset.mjs --seed "$XRPL_BUYER_SEED"
+# or: npm run trustset -- --seed "$XRPL_BUYER_SEED"
 ```
 
 ### Claim RLUSD

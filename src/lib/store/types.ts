@@ -40,6 +40,10 @@ export type StoreRecord = {
    * Stamped from merchant governance at publish time.
    */
   listOnMarket?: boolean;
+  /** Terminal rails stamped from merchant governance (default true). */
+  acceptRlusd?: boolean;
+  acceptXrp?: boolean;
+  acceptVisa?: boolean;
   skus: Sku[];
   createdAt: string;
   /** Bumped on every putStore / inventory merge. */
@@ -64,10 +68,14 @@ export type Order = {
   quantity: number;
   amountAtomic: string;
   status: "pending" | "paid" | "failed";
-  rail: "x402" | "straitsx-card";
+  rail: "x402" | "straitsx-card" | "xrpl-xrp";
   txHash?: string;
   explorerUrl?: string;
   mandate?: CardMandate;
+  /** XRP spent when rail is xrpl-xrp (display string). */
+  sentXrp?: string;
+  /** RLUSD delivered when rail is xrpl-xrp. */
+  deliveredRlusd?: string;
   /** Firebase buyer uid when known at settle. */
   buyerUid?: string;
   createdAt: string;

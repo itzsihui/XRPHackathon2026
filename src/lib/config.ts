@@ -26,10 +26,11 @@ export const config = {
   tokenDecimals: Number(env("TOKEN_DECIMALS", "6")),
   /** Demo unit price in RLUSD on XRPL Testnet. */
   demoUnitPriceXsgd: "0.01",
-  merchantAddress: env(
-    "MERCHANT_ADDRESS",
-    "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh",
-  ),
+  /**
+   * Shared demo settle address (classic r…). Required for crypto rails.
+   * Empty default — never fall back to a random genesis account.
+   */
+  merchantAddress: env("MERCHANT_ADDRESS", ""),
   /** Buyer wallet seed for server-side x402 settle (family seed / secret). */
   get buyerSeed() {
     const raw =
@@ -68,6 +69,19 @@ export const config = {
 
 export function explorerTx(hash: string) {
   return `${config.explorerBase}/transactions/${hash}`;
+}
+
+/**
+ * Demo: all stores settle to MERCHANT_ADDRESS when set.
+ * Prefer env over persisted store.merchantAddress so .env updates
+ * (and fixes for stale catalog rows) apply without republishing.
+ */
+export function storePayTo(store: {
+  merchantAddress?: string | null;
+}): string {
+  const shared = config.merchantAddress.trim();
+  if (shared) return shared;
+  return (store.merchantAddress || "").trim();
 }
 
 /** Decimal RLUSD amount string for XRPL IOU Payment / x402 `amount`. */

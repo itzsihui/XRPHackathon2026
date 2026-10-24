@@ -25,6 +25,7 @@ export default function MerchantSetupPage() {
   const [visaReceiveId, setVisaReceiveId] = useState("");
   const [visaNote, setVisaNote] = useState("");
   const [acceptUsdc, setAcceptUsdc] = useState(true);
+  const [acceptXrp, setAcceptXrp] = useState(true);
   const [acceptVisa, setAcceptVisa] = useState(true);
   const [minPrice, setMinPrice] = useState("");
   const [maxUnits, setMaxUnits] = useState("");
@@ -61,6 +62,7 @@ export default function MerchantSetupPage() {
     }
     const g = p.governance ?? DEFAULT_MERCHANT_GOVERNANCE;
     setAcceptUsdc(g.acceptUsdc);
+    setAcceptXrp(g.acceptXrp !== false);
     setAcceptVisa(g.acceptVisa);
     setMinPrice(g.minUnitPriceUsdc != null ? String(g.minUnitPriceUsdc) : "");
     setMaxUnits(g.maxUnitsPerOrder != null ? String(g.maxUnitsPerOrder) : "");
@@ -101,8 +103,8 @@ export default function MerchantSetupPage() {
       setError("Visa account label is required");
       return;
     }
-    if (!acceptUsdc && !acceptVisa) {
-      setError("Enable at least one payment rail (RLUSD or Visa)");
+    if (!acceptUsdc && !acceptXrp && !acceptVisa) {
+      setError("Enable at least one payment rail (RLUSD, XRP, or Visa)");
       return;
     }
     setBusy(true);
@@ -116,6 +118,7 @@ export default function MerchantSetupPage() {
       });
       const gov: MerchantGovernance = {
         acceptUsdc,
+        acceptXrp,
         acceptVisa,
         minUnitPriceUsdc: minPrice.trim() ? Number(minPrice) : null,
         maxUnitsPerOrder: maxUnits.trim()
@@ -317,6 +320,21 @@ export default function MerchantSetupPage() {
               Accept RLUSD (x402)
               <span className="mt-0.5 block text-xs text-foreground/50">
                 Buyer agents can settle on XRPL Testnet to your classic address.
+              </span>
+            </span>
+          </label>
+          <label className="flex items-start gap-3 text-sm">
+            <input
+              type="checkbox"
+              className="mt-1"
+              checked={acceptXrp}
+              onChange={(e) => setAcceptXrp(e.target.checked)}
+            />
+            <span>
+              Accept XRP (converted to RLUSD)
+              <span className="mt-0.5 block text-xs text-foreground/50">
+                Tourist-terminal rail: buyers pay XRP; you always receive RLUSD
+                via AMM/DEX.
               </span>
             </span>
           </label>

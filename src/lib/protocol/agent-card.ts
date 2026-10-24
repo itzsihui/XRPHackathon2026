@@ -1,4 +1,4 @@
-import { config } from "@/lib/config";
+import { config, storePayTo } from "@/lib/config";
 import type { StoreRecord } from "@/lib/store/types";
 
 /** AI-readable store business card for agent discovery. */
@@ -19,7 +19,7 @@ export function renderAgentCard(store: StoreRecord, origin: string) {
       issuer: config.tokenIssuer,
       network: config.network,
     },
-    payTo: store.merchantAddress,
+    payTo: storePayTo(store),
     endpoints: {
       llmsTxt: `${base}/llms.txt`,
       agentCard: `${base}/agent.json`,

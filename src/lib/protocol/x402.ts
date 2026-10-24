@@ -9,6 +9,7 @@ import {
 import {
   config,
   explorerTx,
+  storePayTo,
   toAtomic,
   toPaymentAmount,
   XRPL_SOURCE_TAG,
@@ -31,7 +32,7 @@ export function buildPaymentRequired(
     network: config.network,
     amount,
     asset: config.tokenAddress,
-    payTo: store.merchantAddress,
+    payTo: storePayTo(store),
     maxTimeoutSeconds: 600,
     extra: {
       name: config.tokenSymbol,
