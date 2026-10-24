@@ -49,8 +49,6 @@ export function CartPayModal({
     () => [...new Set(lines.map((l) => l.storeSlug))],
     [lines],
   );
-  /** Quote FX against first line's merchant (cart may be multi-store; settle is per-SKU). */
-  const primaryMerchant = lines[0]?.merchantAddress?.trim();
   const totalLabel = total.toFixed(2);
 
   useEffect(() => {
@@ -58,10 +56,10 @@ export function CartPayModal({
       if (rail !== "xrp") setFx({ status: "idle" });
       return;
     }
-    if (!primaryMerchant || !(total > 0)) {
+    if (!(total > 0)) {
       setFx({
         status: "unavailable",
-        reason: "Merchant wallet missing",
+        reason: "Cart total missing",
       });
       return;
     }
@@ -71,8 +69,9 @@ export function CartPayModal({
     const timer = window.setTimeout(() => {
       void (async () => {
         try {
+          // Server resolves payTo from MERCHANT_ADDRESS (ignores stale catalog).
           const res = await fetch(
-            `/api/fx-quote?amount=${encodeURIComponent(totalLabel)}&to=${encodeURIComponent(primaryMerchant)}`,
+            `/api/fx-quote?amount=${encodeURIComponent(totalLabel)}`,
           );
           const data = (await res.json()) as {
             ok?: boolean;
@@ -108,7 +107,7 @@ export function CartPayModal({
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [open, rail, acceptXrp, primaryMerchant, total, totalLabel]);
+  }, [open, rail, acceptXrp, total, totalLabel]);
 
   if (!open || lines.length === 0) return null;
 

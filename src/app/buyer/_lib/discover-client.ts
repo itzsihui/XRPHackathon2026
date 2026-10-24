@@ -70,7 +70,11 @@ function toPick(
     storeSlug: product.storeSlug,
     storeName: product.storeName,
     merchantDisplayName: product.merchantDisplayName,
-    merchantAddress: product.merchantAddress,
+    // Stale catalog rows may still carry the dead rHb9… payTo; settle uses env.
+    merchantAddress:
+      product.merchantAddress === "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh"
+        ? undefined
+        : product.merchantAddress,
     visaReceiveLabel: product.visaReceiveLabel,
     visaReceiveId: product.visaReceiveId,
     imageUrl:

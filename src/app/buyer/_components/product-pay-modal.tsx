@@ -63,22 +63,14 @@ export function ProductPayModal({
     }
 
     const amount = product.price;
-    const to = product.merchantAddress?.trim();
-    if (!to) {
-      setFx({
-        status: "unavailable",
-        reason: "Merchant wallet missing",
-      });
-      return;
-    }
-
+    // Server resolves payTo from MERCHANT_ADDRESS (ignores stale catalog rHb9…).
     let cancelled = false;
     setFx({ status: "loading" });
     const timer = window.setTimeout(() => {
       void (async () => {
         try {
           const res = await fetch(
-            `/api/fx-quote?amount=${encodeURIComponent(amount)}&to=${encodeURIComponent(to)}`,
+            `/api/fx-quote?amount=${encodeURIComponent(amount)}`,
           );
           const data = (await res.json()) as {
             ok?: boolean;
