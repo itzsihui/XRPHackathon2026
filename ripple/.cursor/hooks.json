@@ -3,7 +3,7 @@
   "hooks": {
     "stop": [
       {
-        "command": "node /Users/itzsihui/SingHacks2026/ripple/hook/agents/cursor/stop-hook.mjs",
+        "command": "node /Users/itzsihui/XRPHackathon2026/ripple/hook/agents/cursor/stop-hook.mjs",
         "loop_limit": 2
       }
     ]
