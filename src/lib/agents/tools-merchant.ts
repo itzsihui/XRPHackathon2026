@@ -209,7 +209,6 @@ export async function mergeInventoryIntoStore(
     }
   }
 
-  const payTo = resolvePayTo();
   const next: StoreRecord = {
     ...existing,
     name: inventory.name || existing.name,
