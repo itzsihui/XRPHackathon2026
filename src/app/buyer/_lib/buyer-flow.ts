@@ -9,7 +9,7 @@ export type BuyerPhase =
   | "settle"
   | "done";
 
-export type PaymentRail = "visa" | "stablecoin";
+export type PaymentRail = "visa" | "stablecoin" | "xrp";
 
 export type {
   ChainStep,
@@ -30,6 +30,10 @@ export type MarketProductPick = {
   visaReceiveId?: string;
   imageUrl: string;
   score: number;
+  /** Terminal rails from merchant governance (default allow). */
+  acceptRlusd?: boolean;
+  acceptXrp?: boolean;
+  acceptVisa?: boolean;
   /** CaMeL quarantine flags — present when catalog copy looked like injection. */
   injectionFlags?: string[];
   quarantined?: boolean;

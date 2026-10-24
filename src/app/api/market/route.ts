@@ -1,3 +1,4 @@
+import { storePayTo } from "@/lib/config";
 import {
   filterMarketProducts,
   flattenMarketProducts,
@@ -17,7 +18,8 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
   const listed = marketStores(await repo.listStores());
-  const verification = await verifySellers(listed.map((s) => s.merchantAddress));
+  const payTos = listed.map((s) => storePayTo(s));
+  const verification = await verifySellers(payTos);
   const products = filterMarketProducts(
     flattenMarketProducts(listed, verification),
     q,
@@ -27,17 +29,19 @@ export async function GET(request: Request) {
       storeCount: listed.length,
       productCount: products.length,
       query: q || null,
-      stores: listed.map((s) => ({
-        slug: s.slug,
-        name: s.name,
-        skuCount: s.skus.length,
-        merchantDisplayName: s.merchantDisplayName,
-        merchantAddress: s.merchantAddress,
-        sellerVerified:
-          verification.get(s.merchantAddress)?.onLedger === true,
-        visaReceive: s.visaReceive,
-        listOnMarket: s.listOnMarket !== false,
-      })),
+      stores: listed.map((s) => {
+        const payTo = storePayTo(s);
+        return {
+          slug: s.slug,
+          name: s.name,
+          skuCount: s.skus.length,
+          merchantDisplayName: s.merchantDisplayName,
+          merchantAddress: payTo,
+          sellerVerified: verification.get(payTo)?.onLedger === true,
+          visaReceive: s.visaReceive,
+          listOnMarket: s.listOnMarket !== false,
+        };
+      }),
       products,
     },
     { headers: { "cache-control": "no-store" } },

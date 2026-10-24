@@ -34,6 +34,9 @@ export async function POST(request: Request) {
       existingSlug?: string | null;
       boundWalletAddress?: string | null;
       listOnMarket?: boolean;
+      acceptRlusd?: boolean;
+      acceptXrp?: boolean;
+      acceptVisa?: boolean;
     };
     const result = await runMerchantAgent({
       message: body.message,
@@ -48,6 +51,9 @@ export async function POST(request: Request) {
       existingSlug: body.existingSlug,
       boundWalletAddress: body.boundWalletAddress,
       listOnMarket: body.listOnMarket,
+      acceptRlusd: body.acceptRlusd,
+      acceptXrp: body.acceptXrp,
+      acceptVisa: body.acceptVisa,
     });
     return Response.json(result);
   } catch (error) {

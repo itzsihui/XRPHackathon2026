@@ -1,4 +1,4 @@
-import { config } from "@/lib/config";
+import { config, storePayTo } from "@/lib/config";
 import { imageForProduct } from "@/lib/market/product-images";
 import type { StoreRecord } from "@/lib/store/types";
 import {
@@ -42,6 +42,9 @@ export type MarketProduct = {
   visaReceiveLabel?: string;
   visaReceiveId?: string;
   imageUrl: string;
+  acceptRlusd?: boolean;
+  acceptXrp?: boolean;
+  acceptVisa?: boolean;
   attrs?: import("@/lib/store/types").SkuAttrs;
   /** Borneo verified-seller credential on the payTo address (XLS-70). */
   sellerVerification?: SellerBadge;
@@ -260,7 +263,8 @@ export function flattenMarketProducts(
 ): MarketProduct[] {
   const products: MarketProduct[] = [];
   for (const store of stores) {
-    const v = verification?.get(store.merchantAddress);
+    const payTo = storePayTo(store);
+    const v = verification?.get(payTo) ?? verification?.get(store.merchantAddress);
     const sellerVerification = v ? toSellerBadge(v) : undefined;
     for (const sku of store.skus) {
       products.push({
@@ -272,10 +276,13 @@ export function flattenMarketProducts(
         storeSlug: store.slug,
         storeName: store.name,
         merchantDisplayName: store.merchantDisplayName,
-        merchantAddress: store.merchantAddress,
+        merchantAddress: payTo,
         visaReceiveLabel: store.visaReceive?.accountLabel,
         visaReceiveId: store.visaReceive?.receiveId,
         imageUrl: imageForProduct(sku.title, sku.description, sku.id),
+        acceptRlusd: store.acceptRlusd !== false,
+        acceptXrp: store.acceptXrp !== false,
+        acceptVisa: store.acceptVisa !== false,
         attrs: sku.attrs,
         sellerVerification,
       });

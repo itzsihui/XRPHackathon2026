@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "trustset": "tsx scripts/xrpl-trustset.mjs",
     "protocol:build": "node services/protocol/build.mjs",
     "protocol:deploy": "bash scripts/deploy-protocol.sh"
   },

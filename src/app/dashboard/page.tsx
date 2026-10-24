@@ -148,7 +148,7 @@ export default function DashboardPage() {
                 ? ` · ${myStores.length} store${myStores.length === 1 ? "" : "s"}`
                 : " · no stores yet"}
               {myOrders.length > 0
-                ? ` · ${myOrders.filter((o) => o.rail === "x402").length} x402 · ${myOrders.filter((o) => o.rail === "straitsx-card").length} Visa card`
+                ? ` · ${myOrders.filter((o) => o.rail === "x402").length} x402 · ${myOrders.filter((o) => o.rail === "xrpl-xrp").length} XRP · ${myOrders.filter((o) => o.rail === "straitsx-card").length} Visa card`
                 : ""}
             </p>
           </div>

@@ -1,7 +1,11 @@
 #!/usr/bin/env node
 /**
  * One-shot TrustSet for testnet RLUSD.
- * Usage: node scripts/xrpl-trustset.mjs --seed sEd...
+ *
+ * Plain `node` breaks on xrpl's ESM deps (ERR_REQUIRE_ESM). Use tsx:
+ *
+ *   npx tsx scripts/xrpl-trustset.mjs --seed sEd...
+ *   npm run trustset -- --seed sEd...
  */
 import { Client, Wallet } from "xrpl";
 
@@ -21,6 +25,8 @@ if (!seed) {
 }
 
 const wallet = Wallet.fromSeed(seed.trim());
+console.log("TrustSet RLUSD for", wallet.classicAddress);
+
 const client = new Client(WS);
 await client.connect();
 try {
@@ -35,8 +41,15 @@ try {
   });
   const signed = wallet.sign(prepared);
   const result = await client.submitAndWait(signed.tx_blob);
-  console.log(wallet.classicAddress, result.result.meta.TransactionResult);
+  const meta = result.result.meta;
+  const code =
+    meta && typeof meta === "object" && "TransactionResult" in meta
+      ? meta.TransactionResult
+      : "unknown";
+  console.log(code);
   console.log("hash", result.result.hash);
+  console.log("explorer", `https://testnet.xrpl.org/transactions/${result.result.hash}`);
+  if (code !== "tesSUCCESS") process.exit(1);
 } finally {
   await client.disconnect();
 }

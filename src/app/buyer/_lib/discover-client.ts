@@ -23,6 +23,9 @@ type SearchApiProduct = {
   visaReceiveLabel?: string;
   visaReceiveId?: string;
   imageUrl?: string;
+  acceptRlusd?: boolean;
+  acceptXrp?: boolean;
+  acceptVisa?: boolean;
   score: number;
 };
 
@@ -67,12 +70,19 @@ function toPick(
     storeSlug: product.storeSlug,
     storeName: product.storeName,
     merchantDisplayName: product.merchantDisplayName,
-    merchantAddress: product.merchantAddress,
+    // Stale catalog rows may still carry the dead rHb9… payTo; settle uses env.
+    merchantAddress:
+      product.merchantAddress === "rHb9CJAWyB4rj91VRWn96DkukG4bwdtyTh"
+        ? undefined
+        : product.merchantAddress,
     visaReceiveLabel: product.visaReceiveLabel,
     visaReceiveId: product.visaReceiveId,
     imageUrl:
       product.imageUrl ||
       imageForProduct(product.title, product.description, product.id),
+    acceptRlusd: product.acceptRlusd !== false,
+    acceptXrp: product.acceptXrp !== false,
+    acceptVisa: product.acceptVisa !== false,
     score,
     injectionFlags: q.injectionFlags.length ? q.injectionFlags : undefined,
     quarantined: q.injectionFlags.length > 0,

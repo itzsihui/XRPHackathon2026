@@ -1,4 +1,4 @@
-import { config } from "@/lib/config";
+import { config, storePayTo } from "@/lib/config";
 import type { StoreRecord } from "@/lib/store/types";
 import {
   sellerDidDocPath,
@@ -14,6 +14,7 @@ export function renderAgentCard(
   verifier?: unknown,
 ) {
   const base = `${origin}/s/${store.slug}`;
+  const payTo = storePayTo(store);
   return {
     name: store.name,
     slug: store.slug,
@@ -29,7 +30,7 @@ export function renderAgentCard(
       issuer: config.tokenIssuer,
       network: config.network,
     },
-    payTo: store.merchantAddress,
+    payTo,
     /**
      * Read from the XRPL ledger at request time. Agents should re-verify
      * independently using `verifier.exampleRequest` (subject = payTo).
@@ -37,7 +38,7 @@ export function renderAgentCard(
     sellerVerification: verification
       ? {
           ...toSellerBadge(verification),
-          didDocument: `${origin}${sellerDidDocPath(store.merchantAddress)}`,
+          didDocument: `${origin}${sellerDidDocPath(payTo)}`,
           verifier: verifier ?? null,
         }
       : null,

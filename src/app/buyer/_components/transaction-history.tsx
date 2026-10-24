@@ -251,7 +251,8 @@ export function TransactionHistory({
                 </time>
               </div>
               <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
-                {e.rail === "x402" && e.explorerUrl ? (
+                {(e.rail === "x402" || e.rail === "xrpl-xrp") &&
+                e.explorerUrl ? (
                   <a
                     href={e.explorerUrl}
                     target="_blank"
@@ -260,6 +261,14 @@ export function TransactionHistory({
                   >
                     XRPL explorer {shortHash(e.explorerUrl)}
                   </a>
+                ) : null}
+                {e.rail === "xrpl-xrp" && e.sentXrp ? (
+                  <span className="font-mono text-foreground/55">
+                    spent {e.sentXrp} XRP
+                    {e.deliveredRlusd
+                      ? ` · recv ${e.deliveredRlusd} RLUSD`
+                      : ""}
+                  </span>
                 ) : null}
                 {e.rail === "straitsx-card" && e.cardOpaqueId ? (
                   <span className="font-mono text-foreground/55">

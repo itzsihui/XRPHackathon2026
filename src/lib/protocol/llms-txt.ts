@@ -1,4 +1,4 @@
-import { config } from "@/lib/config";
+import { config, storePayTo } from "@/lib/config";
 import type { StoreRecord } from "@/lib/store/types";
 import {
   SELLER_CREDENTIAL_TYPE,
@@ -75,6 +75,6 @@ ${sellerSection(store, origin, verification)}
 - Asset: ${config.tokenAddress}
 - Issuer: ${config.tokenIssuer}
 - Network: ${config.network}
-- Merchant payTo: ${store.merchantAddress}
+- Merchant payTo: ${storePayTo(store)}
 `;
 }

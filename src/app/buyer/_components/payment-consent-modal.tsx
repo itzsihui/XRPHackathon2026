@@ -31,6 +31,7 @@ export function PaymentConsentModal({
   if (!open || !product || !rail) return null;
 
   const isVisa = rail === "visa";
+  const isXrp = rail === "xrp";
 
   return (
     <div
@@ -85,7 +86,11 @@ export function PaymentConsentModal({
             <div className="flex justify-between gap-4">
               <dt className="text-foreground/55">Rail</dt>
               <dd className="text-right">
-                {isVisa ? "Visa (agent-authorized card)" : "RLUSD · XRPL Testnet x402"}
+                {isVisa
+                  ? "Visa (agent-authorized card)"
+                  : isXrp
+                    ? "XRP → RLUSD (AMM)"
+                    : "RLUSD · XRPL Testnet x402"}
               </dd>
             </div>
           </dl>
@@ -97,6 +102,12 @@ export function PaymentConsentModal({
                 <span className="font-mono">{product.storeSlug}</span> · mandate
                 TTL ~15 min. Agent will charge your authorized virtual card —
                 you confirm once.
+              </>
+            ) : isXrp ? (
+              <>
+                Cross-currency Payment: you spend XRP; merchant receives{" "}
+                <strong>{product.price}</strong> RLUSD via XRPL AMM/DEX. Atomic
+                settle — no redirect out of chat.
               </>
             ) : (
               <>

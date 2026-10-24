@@ -14,6 +14,7 @@ export default function BuyerActivityPage() {
   const total = events.reduce((sum, e) => sum + e.amount, 0);
   const visa = events.filter((e) => e.rail === "straitsx-card").length;
   const x402 = events.filter((e) => e.rail === "x402").length;
+  const xrp = events.filter((e) => e.rail === "xrpl-xrp").length;
   const reviewed = events.filter((e) => e.reviewId).length;
 
   return (
@@ -31,8 +32,8 @@ export default function BuyerActivityPage() {
       {events.length > 0 ? (
         <p className="font-mono text-xs text-muted-foreground">
           {events.length} purchase{events.length === 1 ? "" : "s"} ·{" "}
-          {total.toFixed(2)} total · {x402} x402 · {visa} Visa · {reviewed}{" "}
-          reviewed
+          {total.toFixed(2)} total · {x402} x402 · {xrp} XRP · {visa} Visa ·{" "}
+          {reviewed} reviewed
         </p>
       ) : null}
 
