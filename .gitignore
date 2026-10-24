@@ -48,7 +48,15 @@ ripple/skills/xrpl-agentic-resources/rlusd-skills/
 ripple/skills/xrpl-agentic-resources/x402-secure/
 ripple/skills/xrpl-agentic-resources/xrpl-dev-portal/
 ripple/skills/xrpl-agentic-resources/XRPL-Standards/
+
+# XRPL DevEx Capture (vendored clone + local capture data — never commit)
+xrpl-devex-hook/
 .xrpl-devex/
 .claude/settings.local.json
 
-xrpl-devex-hook/
+# Agent skill mirrors / symlinks (local only — avoid file↔dir merge conflicts)
+.claude/skills/
+.codex/skills/
+.cursor/skills/
+.grok/skills/
+.agents/skills/

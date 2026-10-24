@@ -29,6 +29,7 @@ type MarketProduct = {
   visaReceiveLabel?: string;
   visaReceiveId?: string;
   imageUrl: string;
+  sellerVerification?: { onLedger: boolean; did: string | null };
 };
 
 type MarketPayload = {
@@ -245,6 +246,14 @@ export function MarketClient() {
                       {product.merchantDisplayName
                         ? `Sold by ${product.merchantDisplayName}`
                         : product.storeName}
+                      {product.sellerVerification?.onLedger ? (
+                        <span
+                          title={`Borneo verified-seller credential on XRPL${product.sellerVerification.did ? ` · ${product.sellerVerification.did}` : ""}`}
+                          className="ml-2 inline-flex items-center rounded-full border border-[#5c6b52]/30 bg-[#5c6b52]/10 px-1.5 py-px align-middle text-[9px] font-semibold normal-case tracking-normal text-[#3f4c37]"
+                        >
+                          ✓ Verified on XRPL
+                        </span>
+                      ) : null}
                     </p>
                     <h2 className="line-clamp-2 text-sm font-semibold leading-snug text-[#1a1f16] sm:text-[15px]">
                       {product.title}

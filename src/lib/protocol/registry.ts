@@ -1,6 +1,11 @@
 import { config, storePayTo } from "@/lib/config";
 import { imageForProduct } from "@/lib/market/product-images";
 import type { StoreRecord } from "@/lib/store/types";
+import {
+  toSellerBadge,
+  type SellerBadge,
+  type SellerVerification,
+} from "@/lib/xrpl/seller-verification-types";
 
 const TITLE_CAP = 8;
 
@@ -41,6 +46,8 @@ export type MarketProduct = {
   acceptXrp?: boolean;
   acceptVisa?: boolean;
   attrs?: import("@/lib/store/types").SkuAttrs;
+  /** Borneo verified-seller credential on the payTo address (XLS-70). */
+  sellerVerification?: SellerBadge;
 };
 
 export function buildRegistryStores(
@@ -114,10 +121,22 @@ export function renderRegistryJsonFromIndex(
     nextCursor: string | null;
     limit: number;
     totalHint?: number | null;
+    /** payTo address → on-ledger verification. */
+    verification?: Map<string, SellerVerification>;
+    /** Verifier block (issuer, credential type, how to check yourself). */
+    verifier?: unknown;
+    /** Only return stores whose seller is verified on the ledger. */
+    verifiedOnly?: boolean;
   },
 ) {
-  const stores = entries.map((e) => {
+  const rows = extras.verifiedOnly
+    ? entries.filter(
+        (e) => extras.verification?.get(e.merchantAddress)?.onLedger === true,
+      )
+    : entries;
+  const stores = rows.map((e) => {
     const base = `${origin}/s/${e.slug}`;
+    const v = extras.verification?.get(e.merchantAddress);
     return {
       slug: e.slug,
       name: e.name,
@@ -133,6 +152,8 @@ export function renderRegistryJsonFromIndex(
       priceMax: e.priceMax,
       updatedAt: e.updatedAt,
       catalogComplete: false as const,
+      payTo: e.merchantAddress,
+      sellerVerification: v ? toSellerBadge(v) : null,
       ratingAvg: e.ratingAvg,
       ratingCount: e.ratingCount,
       fashion: {
@@ -153,7 +174,7 @@ export function renderRegistryJsonFromIndex(
     protocol: "borneo-agentic-storefront",
     version: "1.2",
     description:
-      "Borneo fashion registry index. Sample SKUs only (catalogComplete:false) — always GET catalog.json for full inventory. Prefer /api/search for intent. Paginate with ?cursor=&limit=. Crawl map: /agent-sitemap.json.",
+      "Borneo fashion registry index. Sample SKUs only (catalogComplete:false) — always GET catalog.json for full inventory. Prefer /api/search for intent. Paginate with ?cursor=&limit=. Crawl map: /agent-sitemap.json. sellerVerification is read from the XRPL ledger (XLS-70 credential on payTo) — re-check it yourself via the verifier block; ?verified=1 keeps only verified sellers (filters within the page).",
     currency: config.tokenSymbol,
     vertical: "fashion",
     market: `${origin}/market`,
@@ -170,6 +191,8 @@ export function renderRegistryJsonFromIndex(
       totalHint: extras.totalHint ?? null,
       indexed: true,
     },
+    filters: { verifiedOnly: extras.verifiedOnly === true },
+    sellerVerification: extras.verifier ?? null,
     storeCount: stores.length,
     stores,
   };
@@ -185,7 +208,7 @@ export function renderRootLlmsTxt(stores: StoreRecord[], origin: string) {
     `> Do not scrape HTML. Do not invent checkout pages.`,
     ``,
     `## How to buy`,
-    `1. Prefer intent search: GET ${origin}/api/search?q=your+need (ranked by relevance + stock + reviews).`,
+    `1. Prefer intent search: GET ${origin}/api/search?q=your+need (ranked by relevance + stock + reviews + on-ledger seller verification; add &verified=1 to require it).`,
     `2. Or crawl ${origin}/agent-sitemap.json / scan ${origin}/registry.json.`,
     `3. GET that store's llms.txt and catalog.json (full SKUs — registry samples are incomplete).`,
     `4. POST /buy (expect HTTP 402) or StraitsX /checkout.`,
@@ -218,6 +241,14 @@ export function renderRootLlmsTxt(stores: StoreRecord[], origin: string) {
   lines.push(`- Keyword market API: ${origin}/api/market?q=`);
   lines.push(`- Human marketplace: ${origin}/market`);
   lines.push(``);
+  lines.push(`## Verified sellers (XRPL)`);
+  lines.push(
+    `- Borneo issues an XLS-70 credential "BorneoVerifiedSeller" to each vetted merchant payTo address; the merchant accepts it and sets an XLS-40 DID pointing at ${origin}/sellers/{payTo}/did.json.`,
+  );
+  lines.push(
+    `- Do not trust this file for it: verify on any XRPL node. Issuer + exact ledger_entry request: ${origin}/api/seller-verification`,
+  );
+  lines.push(``);
   lines.push(`## Currency`);
   lines.push(`- Token: ${config.tokenSymbol}`);
   lines.push(`- Network docs live on each store llms.txt`);
@@ -226,9 +257,15 @@ export function renderRootLlmsTxt(stores: StoreRecord[], origin: string) {
   return lines.join("\n");
 }
 
-export function flattenMarketProducts(stores: StoreRecord[]): MarketProduct[] {
+export function flattenMarketProducts(
+  stores: StoreRecord[],
+  verification?: Map<string, SellerVerification>,
+): MarketProduct[] {
   const products: MarketProduct[] = [];
   for (const store of stores) {
+    const payTo = storePayTo(store);
+    const v = verification?.get(payTo) ?? verification?.get(store.merchantAddress);
+    const sellerVerification = v ? toSellerBadge(v) : undefined;
     for (const sku of store.skus) {
       products.push({
         id: sku.id,
@@ -239,7 +276,7 @@ export function flattenMarketProducts(stores: StoreRecord[]): MarketProduct[] {
         storeSlug: store.slug,
         storeName: store.name,
         merchantDisplayName: store.merchantDisplayName,
-        merchantAddress: storePayTo(store),
+        merchantAddress: payTo,
         visaReceiveLabel: store.visaReceive?.accountLabel,
         visaReceiveId: store.visaReceive?.receiveId,
         imageUrl: imageForProduct(sku.title, sku.description, sku.id),
@@ -247,6 +284,7 @@ export function flattenMarketProducts(stores: StoreRecord[]): MarketProduct[] {
         acceptXrp: store.acceptXrp !== false,
         acceptVisa: store.acceptVisa !== false,
         attrs: sku.attrs,
+        sellerVerification,
       });
     }
   }

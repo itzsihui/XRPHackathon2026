@@ -9,6 +9,7 @@ import {
 } from "@/lib/protocol/semantic-search";
 import { repo } from "@/lib/store/repo";
 import type { StoreRecord } from "@/lib/store/types";
+import { verifierInfo, verifySellers } from "@/lib/xrpl/seller-credential";
 
 export const runtime = "nodejs";
 
@@ -19,9 +20,10 @@ export const runtime = "nodejs";
  * 3) Keyword → embed → commerce re-rank (stock + verified reviews)
  *
  * GET /api/search?q=breathable+linen+shirt&limit=8
- * Optional: &subcategory=tops&color=navy
+ * Optional: &subcategory=tops&color=navy&verified=1
  *
- * Hits include scoreBreakdown: { semantic, stock, reviews, final }.
+ * Hits include scoreBreakdown: { semantic, stock, reviews, trust, verified, injection, final }.
+ * trust/verified come from the seller's XLS-70 credential read off the XRPL ledger.
  */
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -30,6 +32,7 @@ export async function GET(request: Request) {
   const limit = Number.isFinite(limitRaw) ? limitRaw : 8;
   const subcategory = url.searchParams.get("subcategory")?.trim().toLowerCase();
   const color = url.searchParams.get("color")?.trim().toLowerCase();
+  const verifiedOnly = url.searchParams.get("verified") === "1";
 
   const origin = originFromRequest(request);
   const queries = url.searchParams
@@ -88,7 +91,13 @@ export async function GET(request: Request) {
     }),
   );
 
-  const products = flattenMarketProducts(stores);
+  const verification = await verifySellers(
+    stores.map((s) => s.merchantAddress),
+  );
+  const allProducts = flattenMarketProducts(stores, verification);
+  const products = verifiedOnly
+    ? allProducts.filter((p) => p.sellerVerification?.onLedger)
+    : allProducts;
   const result = await semanticSearchMarket({
     products,
     query: queryText,
@@ -107,7 +116,10 @@ export async function GET(request: Request) {
         relevance: "semantic_or_keyword",
         stock: "out_of_stock_demoted",
         reviews: "verified_purchase_wilson_boost",
+        trust: "xrpl_seller_credential_boost_unverified_demoted",
+        injection: "quarantine_flagged_demoted",
       },
+      sellerVerification: verifierInfo(),
       ...result,
       storeCount: stores.length,
       indexStoreCount: index.length,
@@ -115,6 +127,7 @@ export async function GET(request: Request) {
       filters: {
         subcategory: subcategory || null,
         color: color || null,
+        verifiedOnly,
       },
       endpoints: {
         registry: `${origin}/registry.json`,

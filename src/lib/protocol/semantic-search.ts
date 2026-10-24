@@ -1,4 +1,8 @@
 import {
+  scanCatalogProduct,
+  type InjectionFlag,
+} from "@/app/buyer/_lib/catalog-quarantine";
+import {
   filterMarketProducts,
   type MarketProduct,
 } from "@/lib/protocol/registry";
@@ -10,15 +14,28 @@ const MIN_SCORE = 0.28;
 const OOS_MULTIPLIER = 0.2;
 /** Cap so reviews cannot flip a weak semantic match. */
 const MAX_REVIEW_BOOST = 0.08;
+/** Seller holds an accepted Borneo credential on its payTo address (XLS-70). */
+const VERIFIED_SELLER_BOOST = 0.06;
+/** Seller not verified on the ledger — still listed, ranked lower. */
+const UNVERIFIED_MULTIPLIER = 0.85;
+/** Injection-shaped listing copy — pushed to the bottom, boosts withheld. */
+const INJECTION_MULTIPLIER = 0.1;
 
 export type ScoreBreakdown = {
   semantic: number;
   stock: number;
   reviews: number;
+  /** Multiplier from on-ledger seller verification (1 = verified / unknown). */
+  trust: number;
+  /** Additive boost for a verified seller. */
+  verified: number;
+  /** Multiplier from the catalog quarantine scan (1 = clean). */
+  injection: number;
   final: number;
 };
 
 export type SearchHit = MarketProduct & {
+  injectionFlags: InjectionFlag[];
   score: number;
   scoreBreakdown: ScoreBreakdown;
   buyX402: string;
@@ -108,22 +125,43 @@ export function reviewBoost(signal?: ReviewSignal | null): number {
   return Math.min(MAX_REVIEW_BOOST, Math.max(0, lower) * MAX_REVIEW_BOOST * 1.25);
 }
 
+export function injectionFlagsFor(product: MarketProduct): InjectionFlag[] {
+  return scanCatalogProduct({
+    id: product.id,
+    title: product.title,
+    description: product.description,
+    price: product.price,
+    storeSlug: product.storeSlug,
+  }).injectionFlags;
+}
+
+const r3 = (n: number) => Math.round(n * 1000) / 1000;
+
 export function applyCommerceRank(
   semantic: number,
   product: MarketProduct,
   reviews?: Map<string, ReviewSignal> | null,
+  injectionFlags: InjectionFlag[] = injectionFlagsFor(product),
 ): ScoreBreakdown {
   const inStock = product.quantity > 0;
   const stockMult = inStock ? 1 : OOS_MULTIPLIER;
   const key = `${product.storeSlug}:${product.id}`;
-  const rev = reviewBoost(reviews?.get(key));
-  const afterStock = semantic * stockMult;
-  const final = afterStock + rev;
+  const injectionMult = injectionFlags.length > 0 ? INJECTION_MULTIPLIER : 1;
+  // No verification signal (e.g. issuer unset) → neutral, not a penalty.
+  const v = product.sellerVerification;
+  const trustMult = v && !v.onLedger ? UNVERIFIED_MULTIPLIER : 1;
+  const clean = injectionMult === 1;
+  const rev = clean ? reviewBoost(reviews?.get(key)) : 0;
+  const verified = clean && v?.onLedger ? VERIFIED_SELLER_BOOST : 0;
+  const final = semantic * stockMult * trustMult * injectionMult + rev + verified;
   return {
-    semantic: Math.round(semantic * 1000) / 1000,
-    stock: Math.round(stockMult * 1000) / 1000,
-    reviews: Math.round(rev * 1000) / 1000,
-    final: Math.round(final * 1000) / 1000,
+    semantic: r3(semantic),
+    stock: r3(stockMult),
+    reviews: r3(rev),
+    trust: r3(trustMult),
+    verified: r3(verified),
+    injection: r3(injectionMult),
+    final: r3(final),
   };
 }
 
@@ -174,9 +212,16 @@ function toHits(
 ): SearchHit[] {
   return rows
     .map(({ product, semantic }) => {
-      const breakdown = applyCommerceRank(semantic, product, reviews);
+      const injectionFlags = injectionFlagsFor(product);
+      const breakdown = applyCommerceRank(
+        semantic,
+        product,
+        reviews,
+        injectionFlags,
+      );
       return {
         ...product,
+        injectionFlags,
         score: breakdown.final,
         scoreBreakdown: breakdown,
         buyX402: `${origin}/s/${product.storeSlug}/buy`,

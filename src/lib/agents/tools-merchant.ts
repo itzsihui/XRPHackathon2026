@@ -22,6 +22,7 @@ import {
 import { importShopifyStore } from "@/lib/inventory/shopify";
 import { emit } from "@/lib/protocol/events";
 import { repo } from "@/lib/store/repo";
+import { hasRlusdTrustLine } from "@/lib/xrpl/seller-credential";
 import type { Sku, StoreRecord } from "@/lib/store/types";
 import {
   parseMerchantAddress,
@@ -155,8 +156,9 @@ export type MerchantPublishExtras = {
   /** When set, merge SKUs into this live store instead of creating a new one. */
   existingSlug?: string | null;
   /**
-   * @deprecated Demo uses shared MERCHANT_ADDRESS from env for all merchants.
-   * Kept for API compatibility; ignored at publish.
+   * Merchant's own XRPL wallet (Settings). Used as payTo when it holds an
+   * RLUSD trust line, so the Borneo seller credential sits on the address
+   * buyers actually pay. Falls back to MERCHANT_ADDRESS otherwise.
    */
   boundWalletAddress?: string | null;
   /** Appear on /market (default true). From merchant governance. */
@@ -175,6 +177,7 @@ export async function mergeInventoryIntoStore(
   slug: string,
   inventory: ParsedInventory,
   extras?: MerchantPublishExtras,
+  payTo?: string | null,
 ): Promise<StoreRecord | null> {
   const existing = await repo.getStore(slug);
   if (!existing) return null;
@@ -238,9 +241,24 @@ export async function mergeInventoryIntoStore(
   return repo.putStore(next);
 }
 
-/** Demo: every merchant store settles to the shared MERCHANT_ADDRESS env. */
-function resolvePayTo(): ClassicAddress | null {
-  return parseMerchantAddress(config.merchantAddress);
+/**
+ * payTo: the merchant's bound wallet when it can receive RLUSD (trust line),
+ * else the shared MERCHANT_ADDRESS demo wallet.
+ */
+async function resolvePayTo(
+  extras?: MerchantPublishExtras,
+): Promise<{ payTo: ClassicAddress | null; usedBound: boolean; note?: string }> {
+  const fallback = parseMerchantAddress(config.merchantAddress);
+  const bound = parseMerchantAddress(extras?.boundWalletAddress);
+  if (!bound) return { payTo: fallback, usedBound: false };
+  if (await hasRlusdTrustLine(bound)) {
+    return { payTo: bound, usedBound: true };
+  }
+  return {
+    payTo: fallback,
+    usedBound: false,
+    note: `Your bound wallet has no ${config.tokenSymbol} trust line yet, so payouts use the shared demo address. Add the trust line and re-publish to settle to your own wallet.`,
+  };
 }
 
 async function publishStore(
@@ -248,7 +266,7 @@ async function publishStore(
   _merchantAuth?: MerchantAuthProof | null,
   extras?: MerchantPublishExtras,
 ): Promise<MerchantToolResult> {
-  const payTo = resolvePayTo();
+  const { payTo, note: payToNote } = await resolvePayTo(extras);
   if (!payTo) {
     return needWalletResult(draftFromInventory(inventory));
   }
@@ -277,6 +295,7 @@ async function publishStore(
       existingSlug,
       inventory,
       extras,
+      payTo,
     );
     if (merged) {
       emit({
@@ -290,7 +309,7 @@ async function publishStore(
       return {
         status: "published",
         store: merged,
-        reply: `Inventory updated on /s/${merged.slug} and listed on /market. There ${merged.skus.length === 1 ? "is" : "are"} now ${merged.skus.length} SKU${merged.skus.length === 1 ? "" : "s"} priced in ${config.tokenSymbol}. View inventory sheet to keep editing.`,
+        reply: `Inventory updated on /s/${merged.slug} and listed on /market. There ${merged.skus.length === 1 ? "is" : "are"} now ${merged.skus.length} SKU${merged.skus.length === 1 ? "" : "s"} priced in ${config.tokenSymbol}. View inventory sheet to keep editing.${payToNote ? ` ${payToNote}` : ""}`,
         draft: sheet,
       };
     }
@@ -337,7 +356,7 @@ async function publishStore(
   return {
     status: "published",
     store,
-    reply: `The store is now live on /market. Agents can read /s/${store.slug}/llms.txt — and the shop is listed on the network /llms.txt registry. There ${store.skus.length === 1 ? "is" : "are"} ${store.skus.length} SKU${store.skus.length === 1 ? "" : "s"} priced in ${config.tokenSymbol}. Settlements go to your Settings receiving rails (crypto + Visa).`,
+    reply: `The store is now live on /market. Agents can read /s/${store.slug}/llms.txt — and the shop is listed on the network /llms.txt registry. There ${store.skus.length === 1 ? "is" : "are"} ${store.skus.length} SKU${store.skus.length === 1 ? "" : "s"} priced in ${config.tokenSymbol}. Settlements go to ${store.merchantAddress}.${payToNote ? ` ${payToNote}` : ""} Next: in Settings, get a Borneo verified-seller credential on XRPL so agents rank you higher.`,
     draft: sheet,
   };
 }

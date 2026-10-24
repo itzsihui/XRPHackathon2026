@@ -2,12 +2,13 @@ import { emit } from "@/lib/protocol/events";
 import { originFromRequest } from "@/lib/protocol/llms-txt";
 import { loadRegistryIndexPage } from "@/lib/protocol/registry-index-load";
 import { renderRegistryJsonFromIndex } from "@/lib/protocol/registry";
+import { verifierInfo, verifySellers } from "@/lib/xrpl/seller-credential";
 
 export const runtime = "nodejs";
 
 /**
  * Fashion network registry (paginated).
- * GET /registry.json?limit=50&cursor=<slug>
+ * GET /registry.json?limit=50&cursor=<slug>&verified=1
  */
 export async function GET(request: Request) {
   const url = new URL(request.url);
@@ -17,12 +18,20 @@ export async function GET(request: Request) {
     : 50;
   const cursor = url.searchParams.get("cursor");
 
+  const verifiedOnly = url.searchParams.get("verified") === "1";
+
   const page = await loadRegistryIndexPage({ limit, cursor });
   const origin = originFromRequest(request);
+  const verification = await verifySellers(
+    page.entries.map((e) => e.merchantAddress),
+  );
   const body = renderRegistryJsonFromIndex(page.entries, origin, {
     nextCursor: page.nextCursor,
     limit,
     totalHint: page.totalHint,
+    verification,
+    verifier: verifierInfo(),
+    verifiedOnly,
   });
 
   emit({

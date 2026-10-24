@@ -5,6 +5,7 @@ import {
 } from "@/lib/protocol/registry";
 import { repo } from "@/lib/store/repo";
 import type { StoreRecord } from "@/lib/store/types";
+import { verifySellers } from "@/lib/xrpl/seller-credential";
 
 export const runtime = "nodejs";
 
@@ -17,21 +18,30 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
   const listed = marketStores(await repo.listStores());
-  const products = filterMarketProducts(flattenMarketProducts(listed), q);
+  const payTos = listed.map((s) => storePayTo(s));
+  const verification = await verifySellers(payTos);
+  const products = filterMarketProducts(
+    flattenMarketProducts(listed, verification),
+    q,
+  );
   return Response.json(
     {
       storeCount: listed.length,
       productCount: products.length,
       query: q || null,
-      stores: listed.map((s) => ({
-        slug: s.slug,
-        name: s.name,
-        skuCount: s.skus.length,
-        merchantDisplayName: s.merchantDisplayName,
-        merchantAddress: storePayTo(s),
-        visaReceive: s.visaReceive,
-        listOnMarket: s.listOnMarket !== false,
-      })),
+      stores: listed.map((s) => {
+        const payTo = storePayTo(s);
+        return {
+          slug: s.slug,
+          name: s.name,
+          skuCount: s.skus.length,
+          merchantDisplayName: s.merchantDisplayName,
+          merchantAddress: payTo,
+          sellerVerified: verification.get(payTo)?.onLedger === true,
+          visaReceive: s.visaReceive,
+          listOnMarket: s.listOnMarket !== false,
+        };
+      }),
       products,
     },
     { headers: { "cache-control": "no-store" } },
