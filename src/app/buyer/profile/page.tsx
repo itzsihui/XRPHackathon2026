@@ -132,8 +132,8 @@ export default function BuyerProfilePage() {
           <h1 className="text-3xl font-semibold tracking-tight">Profile</h1>
           <p className="mt-2 max-w-[58ch] text-sm text-foreground/70">
             {auth.configured
-              ? "Synced to Firebase when signed in. Card details appear after your first Visa checkout."
-              : "Demo buyer account for this browser. Card details appear after your first Visa checkout."}
+              ? "Synced to Firebase when signed in. Mastercard AP4M settles use your funded Channel."
+              : "Demo buyer account for this browser. Mastercard AP4M settles use your funded Channel."}
           </p>
         </div>
         {auth.configured && auth.user ? (
@@ -168,31 +168,13 @@ export default function BuyerProfilePage() {
 
         <div className="rounded-lg border border-border bg-background p-5">
           <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
-            Visa card
+            Mastercard AP4M
           </p>
-          {account.card.issued ? (
-            <div className="mt-3 space-y-1 text-sm">
-              <p className="font-medium">Scoped card issued (last checkout)</p>
-              {account.card.truncatedPan ? (
-                <p className="font-mono text-foreground/70">
-                  {account.card.truncatedPan}
-                </p>
-              ) : null}
-              {account.card.source ? (
-                <p className="text-foreground/55">
-                  Source: {account.card.source}
-                </p>
-              ) : null}
-              <p className="pt-2 text-xs text-muted-foreground">
-                Mandates stay single-use and burn after payment.
-              </p>
-            </div>
-          ) : (
-            <p className="mt-3 text-sm text-foreground/70">
-              Not set up yet. A scoped Visa card is issued the first time you
-              pay with Visa at checkout.
-            </p>
-          )}
+          <p className="mt-3 text-sm text-foreground/70">
+            Checkout can settle RLUSD from your funded Mastercard AP4M Channel
+            on XRPL EVM Testnet. Classic XRPL RLUSD x402 and XRP→RLUSD remain
+            available as other rails.
+          </p>
         </div>
       </section>
 

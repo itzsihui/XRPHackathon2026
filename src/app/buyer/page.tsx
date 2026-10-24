@@ -5,8 +5,6 @@ import { ProtocolLog } from "@/components/marketing/protocol-log";
 import {
   evaluatePolicy,
   getBuyerCloudSyncUid,
-  mandateSpendCap,
-  markCardIssued,
   readBuyerAccount,
   recordSpend,
   formatSizingSummary,
@@ -112,7 +110,6 @@ export default function BuyerPage() {
     createInitialState(),
   );
   const [receiptNote, setReceiptNote] = useState<string | null>(null);
-  const [cardIssued, setCardIssued] = useState(false);
   const [threads, setThreads] = useState<ChatThread[]>([]);
   const [activeThreadId, setActiveThreadId] = useState("");
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -161,7 +158,6 @@ export default function BuyerPage() {
     const session = readDemoSession();
     const store = session.lastStore ?? null;
     setStoreSlug(store?.slug ?? null);
-    setCardIssued(Boolean(readBuyerAccount()?.card.issued));
 
     const existing = readChatThreads();
     let storeThreads: ChatThreadsStore;
@@ -954,8 +950,8 @@ export default function BuyerPage() {
           {
             id: "settle",
             title:
-              rail === "visa"
-                ? `Settling Visa · ${lines.length} locked quote(s)`
+              rail === "mastercard"
+                ? `Settling Mastercard AP4M · ${lines.length} locked quote(s)`
                 : rail === "xrp"
                   ? `Settling XRP→RLUSD · ${lines.length} locked quote(s)`
                   : `Settling RLUSD x402 · ${lines.length} locked quote(s)`,
@@ -971,8 +967,6 @@ export default function BuyerPage() {
       try {
         for (const line of lines) {
           const unit = Number(line.price);
-          const amount = unit * line.quantity;
-          const spendCap = mandateSpendCap(account, amount);
           const skuId = line.id.includes(":")
             ? line.id.slice(line.id.indexOf(":") + 1)
             : line.id;
@@ -1103,28 +1097,28 @@ export default function BuyerPage() {
                 });
               }
             } else {
-              const res = await fetch("/api/card-mandate", {
+              const res = await fetch("/api/ap4m-settle", {
                 method: "POST",
                 headers: { "content-type": "application/json" },
                 body: JSON.stringify({
-                  checkout: true,
-                  merchant: line.storeSlug,
+                  storeSlug: line.storeSlug,
                   skuId,
                   price: line.price,
                   title: line.title,
-                  spendCap: String(spendCap),
-                  buyerUid: getBuyerCloudSyncUid() || undefined,
+                  operation: `borneo-${line.storeSlug}-${skuId}-${Date.now()}-${q}`
+                    .toLowerCase()
+                    .replace(/[^a-z0-9._:-]+/g, "-")
+                    .slice(0, 64),
                 }),
               });
               const data = (await res.json()) as {
                 steps?: Array<{ type: string; text: string }>;
                 error?: string;
-                mandate?: {
-                  truncatedPan?: string;
-                  source?: string;
-                  cardOpaqueId?: string;
+                receipt?: {
+                  orderId?: string;
+                  explorerUrl?: string;
+                  channelId?: string;
                 };
-                receipt?: { orderId?: string };
               };
               if (
                 (data.steps ?? []).some((s) => s.type === "error") ||
@@ -1132,31 +1126,32 @@ export default function BuyerPage() {
               ) {
                 const errStep = (data.steps ?? []).find((s) => s.type === "error");
                 throw new Error(
-                  errStep?.text || data.error || "Visa card checkout failed",
+                  errStep?.text ||
+                    data.error ||
+                    "Mastercard AP4M checkout failed",
                 );
               }
+              const explorer = data.receipt?.explorerUrl;
               recordSpend({
                 amount: unit,
-                rail: "straitsx-card",
+                rail: "ap4m",
                 title: line.title,
                 storeSlug: line.storeSlug,
                 storeName: line.storeName,
                 merchantDisplayName: line.merchantDisplayName,
                 merchantReceive:
-                  line.visaReceiveLabel ||
-                  line.visaReceiveId ||
-                  line.storeSlug,
+                  data.receipt?.channelId || line.storeSlug,
                 skuId,
                 imageUrl: line.imageUrl,
                 orderId: data.receipt?.orderId,
-                cardOpaqueId: data.mandate?.cardOpaqueId,
-                truncatedPan: data.mandate?.truncatedPan,
+                explorerUrl: explorer,
               });
-              markCardIssued({
-                truncatedPan: data.mandate?.truncatedPan,
-                source: data.mandate?.source,
-              });
-              setCardIssued(true);
+              if (explorer) {
+                links.push({
+                  label: `AP4M explorer · ${skuId}`,
+                  href: explorer,
+                });
+              }
             }
           }
         }
@@ -1190,8 +1185,8 @@ export default function BuyerPage() {
           steps: updateStep(prev.steps, "settle", {
             status: "complete",
             description:
-              rail === "visa"
-                ? "Visa settles complete"
+              rail === "mastercard"
+                ? "Mastercard AP4M settles complete"
                 : rail === "xrp"
                   ? "XRP→RLUSD settles complete"
                   : "x402 settles complete",
@@ -1372,10 +1367,9 @@ export default function BuyerPage() {
           rail={state.rail}
           busy={state.busy}
           receiptNote={receiptNote}
-          firstVisaIssue={!cardIssued}
           acceptRlusd={selected?.acceptRlusd !== false}
           acceptXrp={selected?.acceptXrp !== false}
-          acceptVisa={selected?.acceptVisa !== false}
+          acceptMastercard={selected?.acceptMastercard !== false}
           onRailChange={(rail) =>
             setState((prev) => ({ ...prev, rail, error: null }))
           }
@@ -1398,7 +1392,9 @@ export default function BuyerPage() {
           busy={state.busy}
           acceptRlusd={state.cart.every((p) => p.acceptRlusd !== false)}
           acceptXrp={state.cart.every((p) => p.acceptXrp !== false)}
-          acceptVisa={state.cart.every((p) => p.acceptVisa !== false)}
+          acceptMastercard={state.cart.every(
+            (p) => p.acceptMastercard !== false,
+          )}
           onRailChange={(rail) =>
             setState((prev) => ({ ...prev, rail, error: null }))
           }

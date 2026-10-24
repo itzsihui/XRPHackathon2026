@@ -21,10 +21,10 @@ export function ProductPayModal({
   onPay,
   busy,
   receiptNote,
-  firstVisaIssue,
+  firstMastercardIssue,
   acceptRlusd = true,
   acceptXrp = true,
-  acceptVisa = true,
+  acceptMastercard = true,
 }: {
   open: boolean;
   product: MarketProductPick | null;
@@ -34,11 +34,11 @@ export function ProductPayModal({
   onPay: () => void;
   busy?: boolean;
   receiptNote?: string | null;
-  /** True when buyer has never completed a Visa checkout in this demo account. */
-  firstVisaIssue?: boolean;
+  /** Unused; kept for prop compatibility. */
+  firstMastercardIssue?: boolean;
   acceptRlusd?: boolean;
   acceptXrp?: boolean;
-  acceptVisa?: boolean;
+  acceptMastercard?: boolean;
 }) {
   const [step, setStep] = useState<"detail" | "confirm">("detail");
   const [fx, setFx] = useState<FxQuoteState>({ status: "idle" });
@@ -118,7 +118,7 @@ export function ProductPayModal({
     !!rail &&
     !(rail === "xrp" && !xrpReady) &&
     !(rail === "stablecoin" && !acceptRlusd) &&
-    !(rail === "visa" && !acceptVisa);
+    !(rail === "mastercard" && !acceptMastercard);
 
   return (
     <div
@@ -228,13 +228,13 @@ export function ProductPayModal({
                     onClick={() => onRailChange("xrp")}
                   />
                 ) : null}
-                {acceptVisa ? (
+                {acceptMastercard ? (
                   <RailChip
-                    selected={rail === "visa"}
+                    selected={rail === "mastercard"}
                     disabled={busy}
-                    title="Visa"
-                    subtitle="card"
-                    onClick={() => onRailChange("visa")}
+                    title="Mastercard"
+                    subtitle="AP4M"
+                    onClick={() => onRailChange("mastercard")}
                   />
                 ) : null}
               </div>
@@ -253,13 +253,9 @@ export function ProductPayModal({
                   {" · "}
                   merchant receives the same
                 </p>
-              ) : rail === "visa" ? (
+              ) : rail === "mastercard" ? (
                 <p className="rounded-md border border-border bg-muted/30 px-3 py-2 text-[13px] text-foreground/70">
-                  {firstVisaIssue
-                    ? "Issue a scoped Visa card, then pay this quote."
-                    : product.visaReceiveLabel
-                      ? `Settles to ${product.visaReceiveLabel}`
-                      : "Agent-authorized scoped card"}
+                  Mastercard AP4M Channel voucher · {product.price} RLUSD
                 </p>
               ) : null}
             </div>
@@ -301,8 +297,8 @@ export function ProductPayModal({
                   <div className="flex justify-between gap-3">
                     <dt className="text-foreground/45">Rail</dt>
                     <dd className="text-right text-foreground">
-                      {rail === "visa"
-                        ? "Visa scoped card"
+                      {rail === "mastercard"
+                        ? "Mastercard · AP4M"
                         : rail === "xrp"
                           ? "XRP → RLUSD (AMM)"
                           : "RLUSD · x402"}
@@ -320,23 +316,18 @@ export function ProductPayModal({
                 </p>
               </div>
               <div className="rounded-md border border-border bg-muted/20 px-3 py-2.5 text-[13px] leading-relaxed text-foreground/75">
-                {rail === "visa" ? (
+                {rail === "mastercard" ? (
                   <>
-                    {firstVisaIssue ? (
+                    {firstMastercardIssue ? (
                       <p className="mb-2">
-                        A scoped Visa card will be issued for this merchant, then
-                        burned after payment.
+                        Settlement uses your open Mastercard AP4M payment Channel on XRPL EVM Testnet.
                       </p>
                     ) : null}
-                    Confirm Visa checkout: spend cap ≥{" "}
-                    <strong>{product.price}</strong> RLUSD · merchant receive{" "}
-                    <strong>
-                      {product.visaReceiveLabel || product.storeSlug}
-                    </strong>
-                    {product.visaReceiveId
-                      ? ` (${product.visaReceiveId})`
-                      : ""}
-                    . The agent will not charge until you authorize.
+                    Confirm Mastercard AP4M checkout: redeem{" "}
+                    <strong>{product.price}</strong> RLUSD from your open
+                    Channel for merchant{" "}
+                    <strong>{product.storeSlug}</strong>. The agent will not pay
+                    until you authorize.
                   </>
                 ) : rail === "xrp" ? (
                   <>
@@ -456,7 +447,7 @@ function FxStrip({
   if (fx.status === "unavailable") {
     return (
       <p className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-[13px] text-foreground/70">
-        XRP unavailable — {fx.reason}. Pick RLUSD or Visa.
+        XRP unavailable — {fx.reason}. Pick RLUSD or Mastercard.
       </p>
     );
   }

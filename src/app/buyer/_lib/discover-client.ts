@@ -26,6 +26,7 @@ type SearchApiProduct = {
   acceptRlusd?: boolean;
   acceptXrp?: boolean;
   acceptVisa?: boolean;
+  acceptMastercard?: boolean;
   score: number;
 };
 
@@ -82,7 +83,8 @@ function toPick(
       imageForProduct(product.title, product.description, product.id),
     acceptRlusd: product.acceptRlusd !== false,
     acceptXrp: product.acceptXrp !== false,
-    acceptVisa: product.acceptVisa !== false,
+    acceptMastercard:
+      product.acceptMastercard !== false && product.acceptVisa !== false,
     score,
     injectionFlags: q.injectionFlags.length ? q.injectionFlags : undefined,
     quarantined: q.injectionFlags.length > 0,

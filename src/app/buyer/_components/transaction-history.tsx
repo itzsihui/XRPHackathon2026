@@ -251,7 +251,9 @@ export function TransactionHistory({
                 </time>
               </div>
               <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs">
-                {(e.rail === "x402" || e.rail === "xrpl-xrp") &&
+                {(e.rail === "x402" ||
+                  e.rail === "xrpl-xrp" ||
+                  e.rail === "ap4m") &&
                 e.explorerUrl ? (
                   <a
                     href={e.explorerUrl}
@@ -259,7 +261,8 @@ export function TransactionHistory({
                     rel="noreferrer"
                     className="font-mono text-primary underline-offset-2 hover:underline"
                   >
-                    XRPL explorer {shortHash(e.explorerUrl)}
+                    {e.rail === "ap4m" ? "AP4M explorer" : "XRPL explorer"}{" "}
+                    {shortHash(e.explorerUrl)}
                   </a>
                 ) : null}
                 {e.rail === "xrpl-xrp" && e.sentXrp ? (

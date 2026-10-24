@@ -30,7 +30,7 @@ export function PaymentConsentModal({
 
   if (!open || !product || !rail) return null;
 
-  const isVisa = rail === "visa";
+  const isMastercard = rail === "mastercard";
   const isXrp = rail === "xrp";
 
   return (
@@ -86,8 +86,8 @@ export function PaymentConsentModal({
             <div className="flex justify-between gap-4">
               <dt className="text-foreground/55">Rail</dt>
               <dd className="text-right">
-                {isVisa
-                  ? "Visa (agent-authorized card)"
+                {isMastercard
+                  ? "Mastercard · AP4M Channel"
                   : isXrp
                     ? "XRP → RLUSD (AMM)"
                     : "RLUSD · XRPL Testnet x402"}
@@ -96,12 +96,13 @@ export function PaymentConsentModal({
           </dl>
 
           <div className="rounded-md border border-border bg-muted/40 px-3 py-2.5 text-[13px] leading-relaxed text-foreground/75">
-            {isVisa ? (
+            {isMastercard ? (
               <>
-                Spend cap ≥ <strong>{product.price}</strong> RLUSD · merchant{" "}
-                <span className="font-mono">{product.storeSlug}</span> · mandate
-                TTL ~15 min. Agent will charge your authorized virtual card —
-                you confirm once.
+                Settle <strong>{product.price}</strong> RLUSD from your funded
+                Mastercard AP4M Channel (XRPL EVM Testnet voucher redeem) ·
+                merchant{" "}
+                <span className="font-mono">{product.storeSlug}</span>. Agent
+                pays only after you confirm.
               </>
             ) : isXrp ? (
               <>

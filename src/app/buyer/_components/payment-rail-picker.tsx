@@ -20,9 +20,9 @@ const RAILS: Array<{
     subtitle: "Converted to RLUSD via AMM",
   },
   {
-    id: "visa",
-    title: "Visa",
-    subtitle: "Scoped card · agent-authorized",
+    id: "mastercard",
+    title: "Mastercard",
+    subtitle: "AP4M Channel · RLUSD voucher",
   },
 ];
 

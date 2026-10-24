@@ -129,7 +129,12 @@ export function stateFromSnapshot(snapshot: ChatThreadSnapshot): BuyerFlowState 
     flaggedSkus: snapshot.flaggedSkus ?? [],
     lastSearchQueries: snapshot.lastSearchQueries ?? [],
     selectedId: snapshot.selectedId,
-    rail: snapshot.rail,
+    rail: (() => {
+      const raw = snapshot.rail as string | null;
+      if (raw === "visa" || raw === "mastercard") return "mastercard" as const;
+      if (raw === "stablecoin" || raw === "xrp") return raw;
+      return null;
+    })(),
     snowtrace: snapshot.snowtrace,
     phase,
     detailOpen: false,

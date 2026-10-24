@@ -9,7 +9,7 @@ export type BuyerPhase =
   | "settle"
   | "done";
 
-export type PaymentRail = "visa" | "stablecoin" | "xrp";
+export type PaymentRail = "mastercard" | "stablecoin" | "xrp";
 
 export type {
   ChainStep,
@@ -33,7 +33,8 @@ export type MarketProductPick = {
   /** Terminal rails from merchant governance (default allow). */
   acceptRlusd?: boolean;
   acceptXrp?: boolean;
-  acceptVisa?: boolean;
+  /** Mastercard AP4M Channel rail (legacy catalog field: acceptVisa). */
+  acceptMastercard?: boolean;
   /** CaMeL quarantine flags — present when catalog copy looked like injection. */
   injectionFlags?: string[];
   quarantined?: boolean;
@@ -258,7 +259,7 @@ export function catalogResultMessage(
 
   const setHint = isRealSet
     ? " These look like complementary pieces — add what you want in Build your set, or tap a piece for details and pay."
-    : " Tap a piece for details, then pay with Visa or RLUSD.";
+    : " Tap a piece for details, then pay with Mastercard AP4M or RLUSD.";
 
   const wantedPieces = [
     ...(profile?.items || []),

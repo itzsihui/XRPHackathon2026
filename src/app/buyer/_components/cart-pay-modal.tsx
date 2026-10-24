@@ -22,7 +22,7 @@ export function CartPayModal({
   busy,
   acceptRlusd = true,
   acceptXrp = true,
-  acceptVisa = true,
+  acceptMastercard = true,
 }: {
   open: boolean;
   lines: Array<MarketProductPick & { quantity: number }>;
@@ -33,7 +33,7 @@ export function CartPayModal({
   busy?: boolean;
   acceptRlusd?: boolean;
   acceptXrp?: boolean;
-  acceptVisa?: boolean;
+  acceptMastercard?: boolean;
 }) {
   const [fx, setFx] = useState<FxQuoteState>({ status: "idle" });
 
@@ -116,7 +116,7 @@ export function CartPayModal({
     !!rail &&
     !(rail === "xrp" && !xrpReady) &&
     !(rail === "stablecoin" && !acceptRlusd) &&
-    !(rail === "visa" && !acceptVisa);
+    !(rail === "mastercard" && !acceptMastercard);
 
   return (
     <div
@@ -213,13 +213,13 @@ export function CartPayModal({
                   onClick={() => onRailChange("xrp")}
                 />
               ) : null}
-              {acceptVisa ? (
+              {acceptMastercard ? (
                 <RailChip
-                  selected={rail === "visa"}
+                  selected={rail === "mastercard"}
                   disabled={busy}
-                  title="Visa"
-                  subtitle="card"
-                  onClick={() => onRailChange("visa")}
+                  title="Mastercard"
+                  subtitle="AP4M"
+                  onClick={() => onRailChange("mastercard")}
                 />
               ) : null}
             </div>
@@ -237,7 +237,7 @@ export function CartPayModal({
                 </div>
               ) : fx.status === "unavailable" ? (
                 <p className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-[13px] text-foreground/70">
-                  XRP unavailable — {fx.reason}. Pick RLUSD or Visa.
+                  XRP unavailable — {fx.reason}. Pick RLUSD or Mastercard.
                 </p>
               ) : (
                 <p className="rounded-md border border-border bg-muted/30 px-3 py-2 text-[13px] text-foreground/55">
@@ -249,9 +249,9 @@ export function CartPayModal({
                 You pay <strong>{totalLabel} RLUSD</strong> · merchants receive
                 the same
               </p>
-            ) : rail === "visa" ? (
+            ) : rail === "mastercard" ? (
               <p className="rounded-md border border-border bg-muted/30 px-3 py-2 text-[13px] text-foreground/70">
-                Visa scoped card · {stores.length} store
+                Mastercard AP4M Channel · {stores.length} store
                 {stores.length === 1 ? "" : "s"}
               </p>
             ) : null}
@@ -283,8 +283,8 @@ export function CartPayModal({
           </Button>
           <Button type="button" disabled={busy || !canPay} onClick={onPay}>
             {busy
-              ? rail === "visa"
-                ? "Paying Visa…"
+              ? rail === "mastercard"
+                ? "Paying Mastercard…"
                 : rail === "xrp"
                   ? "Paying XRP…"
                   : "Paying RLUSD…"

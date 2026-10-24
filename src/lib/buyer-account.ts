@@ -21,7 +21,7 @@ export type SpendEvent = {
   id: string;
   at: string;
   amount: number;
-  rail: "x402" | "straitsx-card" | "xrpl-xrp";
+  rail: "x402" | "straitsx-card" | "xrpl-xrp" | "ap4m";
   title: string;
   storeSlug?: string;
   storeName?: string;
@@ -134,7 +134,9 @@ function normalizeSpendEvent(raw: Partial<SpendEvent> & { at?: string }): SpendE
       ? "straitsx-card"
       : raw.rail === "xrpl-xrp"
         ? "xrpl-xrp"
-        : "x402";
+        : raw.rail === "ap4m"
+          ? "ap4m"
+          : "x402";
   return {
     id: raw.id || `spend_${raw.at || Date.now()}`,
     at: raw.at || new Date().toISOString(),
@@ -502,7 +504,7 @@ export function evaluatePolicy(
 
 export function recordSpend(args: {
   amount: number;
-  rail: "x402" | "straitsx-card" | "xrpl-xrp";
+  rail: "x402" | "straitsx-card" | "xrpl-xrp" | "ap4m";
   title: string;
   storeSlug?: string;
   storeName?: string;
@@ -567,6 +569,7 @@ export function markSpendReviewed(args: {
 
 export function railLabel(rail: SpendEvent["rail"]) {
   if (rail === "xrpl-xrp") return "XRP → RLUSD";
+  if (rail === "ap4m") return "Mastercard · AP4M";
   if (rail === "straitsx-card") return "Visa card";
   return "RLUSD · x402";
 }

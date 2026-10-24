@@ -3,7 +3,7 @@
 export const FASHION_HEADLINE = "Fashion buyer agent";
 
 export const FASHION_SUBCOPY =
-  "Chat with your personal salesperson to clarify what you want. When ready, the agent ranks apparel via GET /api/search over the live market (same endpoint external agents use). You choose Visa or RLUSD and authorize before anything pays. Catalog text cannot change payee, amount, or skip authorize.";
+  "Chat with your personal salesperson to clarify what you want. When ready, the agent ranks apparel via GET /api/search over the live market (same endpoint external agents use). You choose Mastercard AP4M, RLUSD, or XRP and authorize before anything pays. Catalog text cannot change payee, amount, or skip authorize.";
 
 export const FASHION_WELCOME =
   "I'm your fashion buyer agent — tell me what you're looking for.";
