@@ -154,7 +154,7 @@ export function MerchantAuthProvider({
         });
         setProfile(next);
       },
-      bindVisa: async (Mastercard) => {
+      bindVisa: async (visa) => {
         if (!user) throw new Error("Sign in as a merchant first");
         const next = await bindMerchantVisaReceive(user.uid, visa, {
           email: user.email,
