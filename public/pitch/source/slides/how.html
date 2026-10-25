@@ -1,0 +1,45 @@
+<section id="how" data-transition="fade" style="background:#0F1217;color:#F3F0E8;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#FF8A3D;letter-spacing:2px;text-transform:uppercase">How it works</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#F3F0E8">From catalog to settled RLUSD</h2>
+</div>
+<div style="display:flex;align-items:center;gap:16px">
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#161B22;border:1px solid #2B333F;border-radius:16px;padding:28px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#F3F0E8">Merchant</h3>
+<p style="font-size:24px;line-height:1.4;color:#A7B0BC">Chat, CSV or URL becomes a catalog</p>
+</div>
+<x-shape kind="arrow-right" style="width:40px;height:20px;background:#FF8A3D"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#161B22;border:1px solid #2B333F;border-radius:16px;padding:28px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#F3F0E8">Registry</h3>
+<p style="font-size:24px;line-height:1.4;color:#A7B0BC">llms.txt and a search API, no scraping</p>
+</div>
+<x-shape kind="arrow-right" style="width:40px;height:20px;background:#FF8A3D"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#161B22;border:1px solid #2B333F;border-radius:16px;padding:28px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#F3F0E8">Any agent</h3>
+<p style="font-size:24px;line-height:1.4;color:#A7B0BC">Discovers stores and picks a SKU</p>
+</div>
+<x-shape kind="arrow-right" style="width:40px;height:20px;background:#FF8A3D"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#161B22;border:1px solid #2B333F;border-radius:16px;padding:28px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#F3F0E8">HTTP 402</h3>
+<p style="font-size:24px;line-height:1.4;color:#A7B0BC">x402 challenge with a locked quote</p>
+</div>
+<x-shape kind="arrow-right" style="width:40px;height:20px;background:#FF8A3D"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#161B22;border:2px solid #FF8A3D;border-radius:16px;padding:28px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#F3F0E8">XRPL</h3>
+<p style="font-size:24px;line-height:1.4;color:#A7B0BC">Settles in seconds. Merchant gets RLUSD</p>
+</div>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;border-top:2px solid #FF8A3D;padding:32px 0px 0px 0px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#F3F0E8">Locked quote</h3>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#FF8A3D">{ storeSlug, skuId, price, payTo }</p>
+<p style="font-size:24px;line-height:1.4;color:#A7B0BC">The pay path only sees these four fields. Product text can’t change who gets paid or how much.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;border-top:2px solid #FF8A3D;padding:32px 0px 0px 0px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#F3F0E8">Verified sellers</h3>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#FF8A3D">XLS-70 credential + XLS-40 DID</p>
+<p style="font-size:24px;line-height:1.4;color:#A7B0BC">Any agent can check a seller on any XRPL node, without trusting Borneo.</p>
+</div>
+</div>
+<aside>Under the hood: the merchant’s catalog goes into an open registry, exposed as llms.txt, registry.json and a search API. Any HTTP agent discovers a store and picks a SKU. It calls buy and gets an HTTP 402 Payment Required with a locked quote. It pays, and it settles on the XRP Ledger in seconds in RLUSD. Two safety pieces: the locked quote means the payment path only ever sees store, SKU, price and payTo, so a poisoned product description can’t redirect money. This is inspired by DeepMind’s CaMeL design. And sellers carry an on-ledger verified-seller credential plus a DID that agents can check themselves.</aside>
+</section>

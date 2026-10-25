@@ -1,0 +1,28 @@
+<section id="mc-why" data-transition="fade" style="background:#0F1217;color:#F3F0E8;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#FF8A3D;letter-spacing:2px;text-transform:uppercase">Mastercard · AP4M deep dive</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#F3F0E8">Give agents a budget, not a card number</h2>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#161B22;border:1px solid #2B333F;border-radius:20px;padding:40px">
+<x-icon name="Lock" style="width:48px;height:48px;color:#FF8A3D"></x-icon>
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:44px;font-weight:700;color:#F3F0E8">Capped</h3>
+<p style="font-size:24px;line-height:1.4;color:#A7B0BC">The buyer’s agent opens one payment channel with a hard RLUSD cap. It can never spend past it.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#161B22;border:1px solid #2B333F;border-radius:20px;padding:40px">
+<x-icon name="Verified" style="width:48px;height:48px;color:#FF8A3D"></x-icon>
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:44px;font-weight:700;color:#F3F0E8">Accountable</h3>
+<p style="font-size:24px;line-height:1.4;color:#A7B0BC">The agent signs in with a registered wallet and pays a known merchant ID. Every spend is attributable.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#161B22;border:1px solid #2B333F;border-radius:20px;padding:40px">
+<x-icon name="Lightning" style="width:48px;height:48px;color:#FF8A3D"></x-icon>
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:44px;font-weight:700;color:#F3F0E8">Instant</h3>
+<p style="font-size:24px;line-height:1.4;color:#A7B0BC">Each purchase redeems a voucher in RLUSD on XRPL EVM. No per-purchase card authorization round trip.</p>
+</div>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;border-left:4px solid #FF8A3D;padding:8px 0px 8px 32px">
+<p style="font-size:32px;line-height:1.4;color:#F3F0E8">For Borneo merchants: Mastercard-backed agent payments, zero extra integration.</p>
+<p style="font-size:24px;color:#A7B0BC">Same locked quote as every other rail. The merchant doesn’t change a thing.</p>
+</div>
+<aside>Why Mastercard Agent Pay matters to us. Handing an agent a raw card number is the wrong model: it’s unlimited, hard to attribute, and every purchase needs a full card authorization. AP4M gives the agent a budget instead. The agent opens one payment channel with a hard cap in RLUSD; it signs in with a registered wallet and pays a known merchant ID, so every spend is attributable; and each purchase is just a voucher redemption on XRPL EVM, so it’s instant. For Borneo merchants, that means they accept Mastercard-backed agent payments without integrating anything: the same locked quote goes down the AP4M rail.</aside>
+</section>

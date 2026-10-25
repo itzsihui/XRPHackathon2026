@@ -1,0 +1,30 @@
+<section id="ledger" data-transition="fade" style="background:#F3F0E8;color:#14181F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B34D0B;letter-spacing:2px;text-transform:uppercase">Ledger · no seed in .env</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#14181F">Merchant payouts land on a Ledger</h2>
+</div>
+<div style="display:flex;gap:64px;align-items:start">
+<div style="flex:1;display:flex;flex-direction:column;gap:28px">
+<div style="display:flex;flex-direction:column;gap:4px"><h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#14181F"><span style="color:#B34D0B">1</span>  Connect</h3><p style="font-size:24px;line-height:1.4;color:#4A5260">Derive the merchant’s r-address on the device. Keys never leave it.</p></div>
+<div style="display:flex;flex-direction:column;gap:4px"><h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#14181F"><span style="color:#B34D0B">2</span>  Fund</h3><p style="font-size:24px;line-height:1.4;color:#4A5260">Testnet faucet covers the XRP reserve.</p></div>
+<div style="display:flex;flex-direction:column;gap:4px"><h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#14181F"><span style="color:#B34D0B">3</span>  Enable RLUSD</h3><p style="font-size:24px;line-height:1.4;color:#4A5260">TrustSet signed on-device, after a plain-English preview.</p></div>
+<div style="display:flex;flex-direction:column;gap:4px"><h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#14181F"><span style="color:#B34D0B">4</span>  Bind</h3><p style="font-size:24px;line-height:1.4;color:#4A5260">That address becomes the store’s payTo. Agent payments land there.</p></div>
+</div>
+<div style="width:760px;display:flex;flex-direction:column;gap:24px;background:#161B22;border-radius:24px;padding:48px;box-shadow:0px 24px 64px rgba(20,24,31,0.25)">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#FF8A3D">REVIEW BEFORE YOU SIGN</p>
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:44px;font-weight:700;line-height:1.15;color:#F3F0E8">Allow this store to receive RLUSD</h3>
+<table style="font-size:24px;color:#F3F0E8">
+<tr><th style="width:36%;color:#A7B0BC;font-weight:400;text-align:left">Transaction</th><th style="width:64%;font-weight:600;text-align:left">TrustSet</th></tr>
+<tr><td style="color:#A7B0BC">Token</td><td>RLUSD (Ripple issuer)</td></tr>
+<tr><td style="color:#A7B0BC">Limit</td><td>1,000,000 RLUSD</td></tr>
+<tr><td style="color:#A7B0BC">Account</td><td>Your merchant r-address</td></tr>
+</table>
+<div style="display:flex;gap:16px;align-items:center">
+<p style="font-size:24px;font-weight:600;background:#FF8A3D;color:#14181F;padding:12px 24px;border-radius:12px">Sign TrustSet on Ledger</p>
+<p style="font-size:24px;color:#A7B0BC;border:1px solid #4A5566;padding:12px 24px;border-radius:12px">Cancel</p>
+</div>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#4A5260">Ledger Device Management Kit · XRP signer kit · Speculos · m/44'/144'/0'/0/0</p>
+<aside>For the Ledger track: the merchant’s payout address lives on a Ledger, not as a seed in an env file. Four steps: connect and derive the r-address on the device, fund the XRP reserve from the faucet, enable RLUSD by signing a TrustSet on the device, and bind that address as the store’s payTo. Ledger Wallet today only shows send and receive, so we built a clear-signing preview for TrustSet: the merchant reads in plain English “allow this store to receive RLUSD, limit one million” before approving. Built with the Device Management Kit and XRP signer kit, running on Speculos for the demo.</aside>
+</section>

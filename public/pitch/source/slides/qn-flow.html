@@ -1,0 +1,41 @@
+<section id="qn-flow" data-transition="fade" style="background:#F3F0E8;color:#14181F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B34D0B;letter-spacing:2px;text-transform:uppercase">QuickNode · how we built it</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#14181F">One dedicated endpoint behind every rail</h2>
+</div>
+<div style="display:flex;align-items:center;gap:24px">
+<div style="width:520px;display:flex;flex-direction:column;gap:12px">
+<p style="font-size:24px;background:#FBFAF6;border:1px solid #D9D4C7;border-radius:12px;padding:16px 24px;color:#14181F">Buyer agent · x402 + XRP settle</p>
+<p style="font-size:24px;background:#FBFAF6;border:1px solid #D9D4C7;border-radius:12px;padding:16px 24px;color:#14181F">FX quote · AMM path finding</p>
+<p style="font-size:24px;background:#FBFAF6;border:1px solid #D9D4C7;border-radius:12px;padding:16px 24px;color:#14181F">Seller verification · XLS-70/40</p>
+<p style="font-size:24px;background:#FBFAF6;border:1px solid #D9D4C7;border-radius:12px;padding:16px 24px;color:#14181F">Merchant setup · Ledger TrustSet</p>
+</div>
+<x-shape kind="arrow-right" style="width:64px;height:32px;background:#B34D0B"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:12px;background:#14181F;border-radius:20px;padding:40px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:44px;font-weight:700;color:#F3F0E8">QuickNode</h3>
+<p style="font-size:24px;color:#A7B0BC">Dedicated XRPL endpoint</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#FF8A3D">HTTPS JSON-RPC<br>WSS</p>
+</div>
+<x-shape kind="arrow-right" style="width:64px;height:32px;background:#B34D0B"></x-shape>
+<div style="width:300px;display:flex;flex-direction:column;gap:12px;background:#FBFAF6;border:2px solid #B34D0B;border-radius:20px;padding:40px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:44px;font-weight:700;color:#14181F">XRPL</h3>
+<p style="font-size:24px;color:#4A5260">Testnet today, mainnet next</p>
+</div>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;border-top:2px solid #B34D0B;padding:24px 0px 0px 0px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#14181F">Not shared</h3>
+<p style="font-size:24px;line-height:1.4;color:#4A5260">No public-node rate limits or queueing in the middle of a checkout.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;border-top:2px solid #B34D0B;padding:24px 0px 0px 0px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#14181F">Answer in one turn</h3>
+<p style="font-size:24px;line-height:1.4;color:#4A5260">WebSocket submit-and-wait returns a validated result inside the same chat turn.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;border-top:2px solid #B34D0B;padding:24px 0px 0px 0px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#14181F">Config, not code</h3>
+<p style="font-size:24px;line-height:1.4;color:#4A5260">Two env vars point every service at it. Mainnet is a swap, not a rewrite.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#4A5260">XRPL_RPC_URL · XRPL_WS_URL → src/lib/config.ts · xrpl.js Client + fetch JSON-RPC</p>
+<aside>How it’s wired. Every part of Borneo that touches the XRP Ledger, the buyer agent’s x402 and XRP settlement, FX quotes through the AMM, seller verification, and the Ledger TrustSet on merchant setup, goes through one dedicated QuickNode endpoint, over HTTPS JSON-RPC for reads and WebSocket for submits. Three reasons: it’s not shared, so there are no public-node rate limits in the middle of a checkout; WebSocket submit-and-wait lets the agent tell the buyer the payment validated inside the same chat turn; and it’s configuration, not code: two env vars, so moving to mainnet is a swap, not a rewrite.</aside>
+</section>

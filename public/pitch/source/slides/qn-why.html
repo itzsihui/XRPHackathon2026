@@ -1,0 +1,16 @@
+<section id="qn-why" data-transition="fade" style="background:#0F1217;color:#F3F0E8;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#FF8A3D;letter-spacing:2px;text-transform:uppercase">QuickNode deep dive</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#F3F0E8">Checkout is only as reliable as the node</h2>
+</div>
+<p style="font-size:32px;line-height:1.4;color:#A7B0BC;width:1500px">One agent purchase hits the XRP Ledger several times. If any call stalls, the agent’s checkout stalls with it.</p>
+<table style="font-size:24px;color:#F3F0E8">
+<tr style="background:#161B22"><th style="width:24%;text-align:left;color:#FF8A3D">Stage</th><th style="width:52%;text-align:left;color:#FF8A3D">XRPL call through QuickNode</th><th style="width:24%;text-align:left;color:#FF8A3D">Transport</th></tr>
+<tr><td>Verify seller</td><td>Credential + DID lookup on the seller’s account</td><td>JSON-RPC</td></tr>
+<tr><td>Check payTo</td><td>account_lines: does it hold an RLUSD trust line?</td><td>WebSocket</td></tr>
+<tr><td>Quote XRP → RLUSD</td><td>amm_info + ripple_path_find</td><td>WebSocket</td></tr>
+<tr><td>Settle</td><td>Payment submit, wait for validation</td><td>WebSocket</td></tr>
+<tr><td>Onboard merchant</td><td>Submit the Ledger-signed TrustSet</td><td>WebSocket</td></tr>
+</table>
+<aside>Why QuickNode matters to us. One agent purchase isn’t one call: we verify the seller’s credential and DID, check the payout address has an RLUSD trust line, quote the XRP-to-RLUSD path through amm_info and ripple_path_find, then submit the payment and wait for validation. Merchant onboarding submits the Ledger-signed TrustSet the same way. Every one of these goes through our dedicated QuickNode endpoint, reads over JSON-RPC and everything that needs a live connection over WebSocket. If any of those calls stalls on a shared public node, the agent’s checkout stalls in front of the buyer.</aside>
+</section>

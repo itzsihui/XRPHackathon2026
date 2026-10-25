@@ -148,6 +148,44 @@ export function LandingHome() {
         </section>
 
         <section
+          aria-label="Pitch deck"
+          className="relative border-t border-white/10 bg-[#07090c] px-6 py-10 md:px-10 md:py-14"
+        >
+          <div className="mx-auto max-w-[1400px]">
+            <div className="mb-4 flex items-end justify-between gap-4">
+              <div>
+                <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-[var(--landing-ember)]">
+                  Pitch · Team Dark Mode
+                </p>
+                <h2 className="mt-2 font-[family-name:var(--font-syne)] text-xl font-semibold tracking-tight text-[var(--landing-fog)] md:text-2xl">
+                  Borneo deck
+                </h2>
+              </div>
+              <p className="hidden text-xs text-[var(--landing-fog)]/45 sm:block">
+                Click left / right or use arrow keys ·{" "}
+                <a
+                  href="/pitch/"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-[var(--landing-jade)] hover:underline"
+                >
+                  Open fullscreen
+                </a>
+              </p>
+            </div>
+            <div className="relative aspect-video w-full overflow-hidden border border-white/10 bg-[#07090c] md:rounded-md">
+              <iframe
+                title="Borneo pitch deck"
+                src="/pitch/index.html"
+                className="absolute inset-0 h-full w-full border-0"
+                loading="lazy"
+                allow="fullscreen"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section
           aria-label="Log in"
           className="relative border-t border-white/10 bg-[#050708] px-6 py-16 md:px-10 md:py-20"
         >

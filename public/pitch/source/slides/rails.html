@@ -1,0 +1,29 @@
+<section id="rails" data-transition="fade" style="background:#0F1217;color:#F3F0E8;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#FF8A3D;letter-spacing:2px;text-transform:uppercase">Checkout</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#F3F0E8">Three ways to pay, one way to get paid</h2>
+</div>
+<div style="display:flex;align-items:center;gap:40px">
+<div style="width:1000px;display:flex;flex-direction:column;gap:20px">
+<div style="display:flex;flex-direction:column;gap:8px;background:#161B22;border:1px solid #2B333F;border-radius:16px;padding:28px 36px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#F3F0E8">RLUSD via x402</h3>
+<p style="font-size:24px;line-height:1.4;color:#A7B0BC">Agent answers the HTTP 402 challenge and pays the exact RLUSD quote on XRPL.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#161B22;border:1px solid #2B333F;border-radius:16px;padding:28px 36px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#F3F0E8">XRP, auto-converted</h3>
+<p style="font-size:24px;line-height:1.4;color:#A7B0BC">One cross-currency Payment through the XRPL AMM: buyer spends XRP, merchant receives RLUSD.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:8px;background:#161B22;border:1px solid #2B333F;border-radius:16px;padding:28px 36px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#F3F0E8">Mastercard Agent Pay (AP4M)</h3>
+<p style="font-size:24px;line-height:1.4;color:#A7B0BC">Agent pays from a capped AP4M payment channel on XRPL EVM; each purchase redeems a voucher.</p>
+</div>
+</div>
+<x-shape kind="arrow-right" style="width:80px;height:40px;background:#FF8A3D"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:20px;background:#FF8A3D;border-radius:20px;padding:48px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#14181F">MERCHANT RECEIVES</p>
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;color:#14181F">RLUSD</h3>
+<p style="font-size:24px;line-height:1.4;color:#14181F">Like a tourist card terminal: the buyer picks the currency, the merchant’s books stay in one.</p>
+</div>
+</div>
+<aside>Checkout is multi-rail. The buyer’s agent can pay in RLUSD through x402, in XRP that the ledger converts through the AMM in one Payment, or through Mastercard Agent Pay, AP4M, where the agent opens a capped payment channel and each purchase redeems a voucher. Whatever the buyer uses, the merchant ends up with RLUSD. Mastercard is one rail among three: it brings card-network trust and spending caps to agents without the merchant integrating anything new.</aside>
+</section>

@@ -1,0 +1,21 @@
+<section id="demo" data-transition="fade" style="background:#F3F0E8;color:#14181F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B34D0B;letter-spacing:2px;text-transform:uppercase">Live demo</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#14181F">Two sides, one network</h2>
+</div>
+<div style="display:flex;gap:48px">
+<div style="flex:1;display:flex;flex-direction:column;gap:28px;background:#FBFAF6;border:1px solid #D9D4C7;border-radius:20px;padding:48px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:44px;font-weight:700;color:#14181F">Merchant</h3>
+<div style="display:flex;flex-direction:column;gap:8px"><p style="font-size:32px;color:#14181F"><b>1.</b> Chat, drop a CSV or paste a URL</p><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B34D0B">/onboard</p></div>
+<div style="display:flex;flex-direction:column;gap:8px"><p style="font-size:32px;color:#14181F"><b>2.</b> Connect Ledger, enable RLUSD</p><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B34D0B">/merchant/setup</p></div>
+<div style="display:flex;flex-direction:column;gap:8px"><p style="font-size:32px;color:#14181F"><b>3.</b> Publish to the open registry</p><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B34D0B">/registry.json · /s/{slug}/llms.txt</p></div>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:28px;background:#FBFAF6;border:1px solid #D9D4C7;border-radius:20px;padding:48px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:44px;font-weight:700;color:#14181F">Buyer agent</h3>
+<div style="display:flex;flex-direction:column;gap:8px"><p style="font-size:32px;color:#14181F"><b>1.</b> “Linen shirt under 40 RLUSD”</p><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B34D0B">/buyer</p></div>
+<div style="display:flex;flex-direction:column;gap:8px"><p style="font-size:32px;color:#14181F"><b>2.</b> Searches every store, ranks SKUs</p><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B34D0B">GET /api/search?q=…</p></div>
+<div style="display:flex;flex-direction:column;gap:8px"><p style="font-size:32px;color:#14181F"><b>3.</b> Authorize, settle, explorer receipt</p><p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B34D0B">POST /s/{slug}/buy → 402</p></div>
+</div>
+</div>
+<aside>Switch to the live demo here. Merchant side: onboard by chat or CSV, connect the Ledger and enable RLUSD on the setup page, publish. Buyer side: ask the salesperson for something, it searches every store on the registry through the same search API external agents use, and you authorize and settle in chat with an explorer link as the receipt. If the demo fails, swap in screenshots of each step.</aside>
+</section>

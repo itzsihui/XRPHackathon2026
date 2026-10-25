@@ -1,0 +1,52 @@
+<section id="problem-anim" data-transition="fade" style="background:#0F1217;color:#F3F0E8;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#FF8A3D;letter-spacing:2px;text-transform:uppercase">The problem · merchant side</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#F3F0E8">Agents can’t shop your store</h2>
+<p style="font-size:32px;color:#A7B0BC">Your customers are becoming agents. Your store was built for humans.</p>
+<x-embed style="position:absolute;left:128px;top:356px;width:1664px;height:560px"><!doctype html><html><head><meta charset="utf-8"><style>
+html,body{margin:0;height:100%;background:transparent;overflow:hidden;font-family:"Segoe UI",-apple-system,Helvetica,Arial,sans-serif}
+#s{position:absolute;left:0;top:0;width:1664px;height:560px;transform-origin:0 0}
+.chip{position:absolute;padding:10px 22px;border-radius:999px;font-size:24px;font-weight:600;white-space:nowrap;background:#1E2530;color:#E8ECF1;border:2px solid #3A4554;transform:translate(-50%,-50%)}
+.chip.ok{background:#2A2016;border-color:#FF8A3D;color:#FFD9BD}
+.wall{position:absolute;width:24px;background:repeating-linear-gradient(0deg,#4A5566 0 28px,#2B333F 28px 32px);border-radius:4px}
+.door{position:absolute;width:24px;border:2px dashed #FF8A3D;box-sizing:border-box;border-radius:4px}
+.tag{position:absolute;font-size:20px;color:#A7B0BC;font-weight:700;letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.tag.o{color:#FF8A3D}
+.store{position:absolute;border:2px solid #F3F0E8;border-radius:18px;background:#161B22;color:#F3F0E8;padding:28px;box-sizing:border-box}
+.x{position:absolute;font-size:24px;font-weight:700;color:#FF8A3D;white-space:nowrap;transform:translate(-50%,-50%);transition:opacity 1s,transform 1s}
+.cnt{position:absolute;left:0;top:508px;font-size:26px;color:#A7B0BC}
+.cnt b{color:#F3F0E8;font-size:30px}
+</style></head><body><div id="s"></div><script>
+var S=document.getElementById('s');
+function fit(){S.style.transform='scale('+(innerWidth/1664)+')'}
+fit();addEventListener('resize',fit);
+function el(c,h,st){var d=document.createElement('div');d.className=c;if(h)d.innerHTML=h;for(var k in st)d.style[k]=st[k];S.appendChild(d);return d}
+var WX=1060,DT=250,DB=330;
+el('wall','',{left:WX+'px',top:'0px',height:DT+'px'});
+el('wall','',{left:WX+'px',top:DB+'px',height:(490-DB)+'px'});
+el('door','',{left:WX+'px',top:DT+'px',height:(DB-DT)+'px'});
+el('tag','CAPTCHA',{left:'1100px',top:'30px'});
+el('tag','Login',{left:'1100px',top:'110px'});
+el('tag','Card form',{left:'1100px',top:'190px'});
+el('tag o','Partner',{left:'1100px',top:'278px'});
+el('tag','3DS',{left:'1100px',top:'370px'});
+el('tag','DOM drift',{left:'1100px',top:'450px'});
+el('store','<div style="font-size:36px;font-weight:700;margin-bottom:16px">Your store</div><div style="font-size:24px;color:#A7B0BC;line-height:1.7">HTML pages<br>Cart → login → card<br>Built for human eyes</div>',{left:'1264px',top:'60px',width:'400px',height:'400px'});
+var cnt=el('cnt','',{});
+var names=['Procurement bot','Personal agent','Local LLM','ChatGPT','Cursor agent','Travel agent','Ops copilot','Claude','Research agent','Household agent'];
+var okn={ChatGPT:1,Claude:1},lanes=[40,125,210,370,455],li=0,ni=0,ag=[],away=0,thru=0,last=0,sp=0;
+function spawn(){var n=names[ni++%names.length],g=!!okn[n],y=g?290:lanes[li++%lanes.length];var c=el('chip'+(g?' ok':''),n,{top:y+'px',left:'-160px'});ag.push({c:c,x:-160,y:y,g:g,w:c.offsetWidth,st:0,v:380,o:1})}
+function boom(x,y){var m=el('x','✕ blocked',{left:x+'px',top:y+'px'});setTimeout(function(){m.style.opacity=0;m.style.transform='translate(-50%,-160%)'},40);setTimeout(function(){m.remove()},1100)}
+function tick(t){var dt=last?Math.min(.05,(t-last)/1000):0;last=t;sp-=dt;if(sp<=0){spawn();sp=.8}
+for(var i=ag.length-1;i>=0;i--){var a=ag[i];a.x+=a.v*dt;
+if(a.st==0&&!a.g&&a.x+a.w/2>=WX-2){a.st=1;a.x=WX-2-a.w/2;a.v=-320;boom(WX-90,a.y-44);away++}
+if(a.st==1)a.o-=dt*1.1;
+if(a.g&&a.st==0&&a.x>1380){a.st=2;thru++}
+if(a.st==2)a.o-=dt*2.5;
+a.c.style.left=a.x+'px';a.c.style.opacity=Math.max(0,a.o);
+if(a.o<=0){a.c.remove();ag.splice(i,1)}}
+cnt.innerHTML='Turned away <b>'+away+'</b>&nbsp;&nbsp;·&nbsp;&nbsp;Got through <b>'+thru+'</b>&nbsp;&nbsp;<span style="color:#6B7686">only via a partner chat app</span>';
+requestAnimationFrame(tick)}
+requestAnimationFrame(tick);
+</script></body></html></x-embed>
+<aside>Picture a small merchant, say a Singapore T-shirt brand with a normal web store. More and more of their customers are not people anymore, they’re agents: procurement bots, personal assistants, local LLMs, coding agents. Watch what happens. They hit CAPTCHAs, login walls, card forms, 3DS, and pages that change layout every week, and they bounce. The only agents that get through are the two big chat apps, through a gated partner catalog. So the merchant is effectively invisible to the long tail of agents that want to buy.</aside>
+</section>

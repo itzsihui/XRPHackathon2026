@@ -1,0 +1,53 @@
+<section id="mc-flow" data-transition="fade" style="background:#F3F0E8;color:#14181F;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B34D0B;letter-spacing:2px;text-transform:uppercase">Mastercard · how we built it</p>
+<h2 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:72px;font-weight:700;line-height:1.1;letter-spacing:-1px;color:#14181F">One purchase on the AP4M rail</h2>
+</div>
+<div style="display:flex;align-items:center;gap:12px">
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FBFAF6;border:1px solid #D9D4C7;border-radius:16px;padding:24px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B34D0B">1 · once</p>
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#14181F">Sign in</h3>
+<p style="font-size:24px;line-height:1.35;color:#4A5260">Agent wallet gets an AP4M session</p>
+</div>
+<x-shape kind="arrow-right" style="width:32px;height:16px;background:#B34D0B"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FBFAF6;border:1px solid #D9D4C7;border-radius:16px;padding:24px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B34D0B">2 · once</p>
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#14181F">Open channel</h3>
+<p style="font-size:24px;line-height:1.35;color:#4A5260">RLUSD cap + merchant ID</p>
+</div>
+<x-shape kind="arrow-right" style="width:32px;height:16px;background:#B34D0B"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FBFAF6;border:1px solid #D9D4C7;border-radius:16px;padding:24px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B34D0B">3 · per buy</p>
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#14181F">Authorize</h3>
+<p style="font-size:24px;line-height:1.35;color:#4A5260">Buyer approves the locked quote in chat</p>
+</div>
+<x-shape kind="arrow-right" style="width:32px;height:16px;background:#B34D0B"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FBFAF6;border:1px solid #D9D4C7;border-radius:16px;padding:24px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B34D0B">4 · per buy</p>
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#14181F">Redeem</h3>
+<p style="font-size:24px;line-height:1.35;color:#4A5260">Voucher for redeemed + price</p>
+</div>
+<x-shape kind="arrow-right" style="width:32px;height:16px;background:#B34D0B"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;background:#FBFAF6;border:2px solid #B34D0B;border-radius:16px;padding:24px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#B34D0B">5 · per buy</p>
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#14181F">Receipt</h3>
+<p style="font-size:24px;line-height:1.35;color:#4A5260">Claim ID + XRPL EVM tx link</p>
+</div>
+</div>
+<div style="display:flex;gap:32px">
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;border-top:2px solid #B34D0B;padding:24px 0px 0px 0px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#14181F">Cap check first</h3>
+<p style="font-size:24px;line-height:1.4;color:#4A5260">Over-cap buys are refused before anything is signed, with the remaining balance shown.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;border-top:2px solid #B34D0B;padding:24px 0px 0px 0px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#14181F">No double pay</h3>
+<p style="font-size:24px;line-height:1.4;color:#4A5260">Each order is idempotent: a retry returns the same receipt instead of redeeming twice.</p>
+</div>
+<div style="flex:1;display:flex;flex-direction:column;gap:8px;border-top:2px solid #B34D0B;padding:24px 0px 0px 0px">
+<h3 style="font-family:'Space Grotesk', Arial, sans-serif;font-size:32px;font-weight:700;color:#14181F">Open channels only</h3>
+<p style="font-size:24px;line-height:1.4;color:#4A5260">Channel state is read on-chain before every redeem. Closed or expired means no settle.</p>
+</div>
+</div>
+<p style="position:absolute;left:128px;bottom:64px;width:1664px;font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#4A5260">POST /api/ap4m-settle · src/lib/ap4m/settle.ts · AP4M hackathon SDK + ethers on XRPL EVM Testnet</p>
+<aside>Here’s exactly what happens. Once: the agent wallet signs in to AP4M and opens a payment channel with an RLUSD cap and the merchant ID. Then per purchase: the buyer approves the locked quote in chat, we redeem a cumulative voucher, which is what’s already redeemed plus this price, and we get back a claim ID and an XRPL EVM transaction as the receipt. We added three guardrails on top: we check the cap before signing anything and tell the buyer what’s left; every order is idempotent, so a network retry returns the same receipt instead of paying twice; and we read the channel state on-chain before every redeem, so a closed channel can’t settle.</aside>
+</section>
