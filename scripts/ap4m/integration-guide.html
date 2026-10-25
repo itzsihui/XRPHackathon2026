@@ -1,0 +1,541 @@
+﻿<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#151515">
+  <title>AP4M Developer Guide | Mastercard XRPL Hackathon</title>
+  <link rel="stylesheet" href="/participant.css">
+  <style>
+    /* ── Page scaffold ───────────────────────────────────────────── */
+    .guide-hero  { max-width: 860px; margin: 0 auto; padding: 2.5rem 1.5rem 1.75rem; }
+    .guide-layout { display: flex; align-items: flex-start; max-width: 1140px; margin: 0 auto; padding: 0 1.5rem 5rem; }
+
+    /* ── Left nav ────────────────────────────────────────────────── */
+    .guide-nav  { flex: 0 0 188px; padding-right: 1.5rem; border-right: 1px solid #e8eae8; }
+    .guide-nav-inner { position: sticky; top: 1.75rem; max-height: calc(100vh - 3.5rem); overflow-y: auto; }
+    .guide-nav-label { display: block; padding: 0 .45rem; margin-bottom: .55rem; color: #b0b5b3; font-size: .69rem; font-weight: 750; letter-spacing: 1.15px; text-transform: uppercase; }
+    .guide-nav-links { display: flex; flex-direction: column; gap: 1px; }
+    .guide-nav-link { display: block; padding: .3rem .45rem; border-radius: 3px; color: #5a6461; font-size: .82rem; line-height: 1.4; text-decoration: none; transition: background .1s, color .1s; }
+    .guide-nav-link:hover { background: #f0f1f0; color: #151515; }
+    .guide-nav-link.current { background: #fef0f0; color: #c40017; font-weight: 650; }
+    .guide-nav-sub { margin-top: 2px; padding-left: .65rem; }
+    .guide-nav-sub .guide-nav-link { font-size: .76rem; color: #818986; }
+    .guide-nav-sub .guide-nav-link:hover { color: #151515; }
+    .guide-nav-sub .guide-nav-link.current { color: #c40017; background: #fef0f0; }
+
+    /* ── Main content area ───────────────────────────────────────── */
+    .guide-main { flex: 1 1 0; min-width: 0; padding-left: 2.75rem; color: #212121; }
+    .guide-section { padding-top: 2.5rem; margin-top: 2.5rem; border-top: 1px solid #e8eae8; }
+    .guide-section:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+
+    /* ── Typography ──────────────────────────────────────────────── */
+    .guide-main h2 { margin: 0 0 .7rem; color: #151515; }
+    .guide-main p, .guide-main li { color: #3a3a3a; line-height: 1.65; }
+    .guide-main ul { padding-left: 1.4rem; }
+    .guide-main li { margin-bottom: .55rem; }
+
+    /* ── Tables ──────────────────────────────────────────────────── */
+    .guide-main table { width: 100%; border-collapse: collapse; font-size: .88rem; border: 1px solid #e0e2e0; border-radius: 6px; overflow: hidden; margin: 1rem 0; }
+    .guide-main th { text-align: left; padding: .55rem .85rem; background: #f0f1f0; color: #151515; font-weight: 700; font-size: .78rem; text-transform: uppercase; letter-spacing: .06em; border-bottom: 1px solid #d8dad8; }
+    .guide-main td { padding: .5rem .85rem; border-top: 1px solid #eaeceb; vertical-align: top; color: #2a2a2a; }
+    .guide-main tr:first-child td { border-top: none; }
+    .guide-main td code { background: #f0f1f0; border: 1px solid #dfe1de; padding: .15em .45em; border-radius: 3px; font-size: .82em; color: #c0392b; font-family: 'Courier New', monospace; }
+
+    /* ── Sequence diagram ────────────────────────────────────────── */
+    .seq-diagram { background: #fff; border: 1px solid #e0e2e0; border-radius: 8px; padding: 1.5rem 1rem; overflow-x: auto; margin: 1.25rem 0; }
+
+    /* ── Step blocks ─────────────────────────────────────────────── */
+    .step-block { margin: 1.1rem 0; padding: 1.25rem 1.5rem; border: 1px solid #e8eae8; border-left: 3px solid #eb001b; border-radius: 0 6px 6px 0; background: #fff; }
+    .step-block h3 { display: flex; align-items: center; gap: .55rem; margin: 0 0 .45rem; color: #151515; font-size: 1rem; font-weight: 700; font-family: 'Avenir Next', Avenir, 'Segoe UI', sans-serif; letter-spacing: 0; text-transform: none; }
+    .step-sub { margin: 0 0 .85rem; color: #5a6461; font-size: .88rem; line-height: 1.55; }
+
+    /* ── Step badge ──────────────────────────────────────────────── */
+    .step-badge { display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; background: #eb001b; color: #fff; border-radius: 50%; width: 26px; height: 26px; font-size: .78rem; font-weight: 700; }
+
+    /* ── Code blocks ─────────────────────────────────────────────── */
+    .pre-wrap { position: relative; margin: .75rem 0; }
+    .guide-main pre { background: #f7f8f7; border: 1px solid #dfe1de; border-left: 3px solid #d0d2d0; border-radius: 0 4px 4px 0; padding: 1rem 3.5rem 1rem 1.25rem; overflow-x: auto; font-size: .84rem; line-height: 1.65; color: #1e1e1e; margin: 0; }
+    .guide-main code { font-family: 'Courier New', monospace; }
+    .guide-copy { position: absolute; top: .5rem; right: .5rem; height: 22px; padding: 0 8px; border: 1px solid #d0d2d0; border-radius: 3px; background: #fff; color: #666; cursor: pointer; font-family: 'Avenir Next', Avenir, sans-serif; font-size: .72rem; font-weight: 650; line-height: 22px; white-space: nowrap; }
+    .guide-copy:hover { border-color: #aaa; color: #151515; background: #f5f6f5; }
+
+    /* ── Download buttons ────────────────────────────────────────── */
+    .download-row { display: flex; gap: .75rem; flex-wrap: wrap; margin: 1.25rem 0; }
+    .download-btn { display: inline-flex; align-items: center; gap: .45rem; background: #eb001b; color: #fff; padding: .55rem 1.1rem; border-radius: 4px; text-decoration: none; font-weight: 600; font-size: .88rem; }
+    .download-btn:hover { background: #c40017; }
+    .download-btn.secondary { background: #fff; border: 1px solid #c8cac8; color: #2a2a2a; }
+    .download-btn.secondary:hover { background: #f5f6f5; border-color: #a0a2a0; }
+
+    /* ── Note / callout ──────────────────────────────────────────── */
+    .note { background: #fff8f0; border-left: 3px solid #f79e1b; padding: .75rem 1rem; border-radius: 0 4px 4px 0; font-size: .88rem; margin: 1rem 0; color: #3a2a00; }
+
+    /* ── Checklist cards ─────────────────────────────────────────── */
+    .checklist-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1.25rem 0; }
+    @media (max-width: 640px) { .checklist-grid { grid-template-columns: 1fr; } }
+    .checklist-card { border: 1px solid #e8eae8; border-radius: 8px; padding: 1.1rem 1.25rem; background: #fff; }
+    .checklist-card.admin-provides { border-top: 3px solid #eb001b; }
+    .checklist-card.you-create     { border-top: 3px solid #f79e1b; }
+    .checklist-card-label { font-size: .7rem; font-weight: 750; letter-spacing: 1.1px; text-transform: uppercase; color: #888; margin-bottom: .85rem; }
+    .checklist-item { display: flex; align-items: flex-start; gap: .75rem; margin-bottom: .85rem; }
+    .checklist-item:last-child { margin-bottom: 0; }
+    .checklist-icon { font-size: 1.25rem; flex-shrink: 0; line-height: 1.4; }
+    .checklist-item strong { display: block; color: #151515; font-size: .9rem; margin-bottom: .15rem; }
+    .checklist-item span { color: #5a6461; font-size: .83rem; line-height: 1.5; }
+    .checklist-item a { color: #eb001b; }
+
+    /* ── Tip cards ───────────────────────────────────────────────── */
+    .tips-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: .85rem; margin: 1rem 0; }
+    .tip-card { background: #fff; border: 1px solid #e8eae8; border-radius: 8px; padding: 1rem 1.1rem; display: flex; align-items: flex-start; gap: .75rem; }
+    .tip-icon { font-size: 1.5rem; flex-shrink: 0; line-height: 1.2; }
+    .tip-card strong { display: block; color: #151515; font-size: .88rem; margin-bottom: .2rem; }
+    .tip-card p { color: #5a6461; font-size: .83rem; line-height: 1.55; margin: 0; }
+    .tip-card a { color: #eb001b; }
+
+    /* ── Notices ─────────────────────────────────────────────────── */
+    .hackathon-notice { background: #fffbf0; border: 1px solid #f0d080; border-radius: 6px; padding: .75rem 1rem; font-size: .85rem; color: #5a4800; margin-bottom: 1.25rem; }
+    .network-badge { display: inline-block; background: #e8f5ee; color: #1a6640; border: 1px solid #b0d8bf; padding: .2em .7em; border-radius: 4px; font-size: .8rem; font-family: monospace; }
+
+    /* ── Mobile ──────────────────────────────────────────────────── */
+    @media (max-width: 860px) {
+      .guide-layout { flex-direction: column; padding: 0 1rem 3rem; }
+      .guide-nav { display: none; }
+      .guide-main { padding-left: 0; }
+      .guide-hero { padding: 1.5rem 1rem 1.25rem; }
+    }
+
+    /* ── Challenge section ───────────────────────────────────────── */
+    .challenge-banner { background: #151515; border-radius: 8px; padding: 1.5rem 1.75rem; margin-bottom: 2rem; display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+    .challenge-banner-text { flex: 1 1 260px; }
+    .challenge-banner-eyebrow { font-size: .68rem; font-weight: 750; letter-spacing: 1.3px; text-transform: uppercase; color: #f79e1b; margin-bottom: .45rem; }
+    .challenge-banner h2 { margin: 0 0 .5rem; color: #fff; font-size: 1.3rem; line-height: 1.25; }
+    .challenge-banner p { margin: 0; color: #b0b5b3; font-size: .88rem; line-height: 1.6; }
+    .challenge-banner-link { display: inline-flex; align-items: center; gap: .4rem; background: #eb001b; color: #fff; padding: .5rem 1rem; border-radius: 4px; text-decoration: none; font-weight: 650; font-size: .84rem; white-space: nowrap; flex-shrink: 0; }
+    .challenge-banner-link:hover { background: #c40017; }
+    .challenge-banner-link svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    .use-case-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: .85rem; margin: 1.25rem 0; }
+    @media (max-width: 600px) { .use-case-grid { grid-template-columns: 1fr; } }
+    .use-case-card { border: 1px solid #e8eae8; border-radius: 8px; padding: 1.1rem 1.25rem; background: #fff; display: flex; gap: .85rem; align-items: flex-start; }
+    .use-case-icon { width: 40px; height: 40px; border-radius: 6px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+    .use-case-card strong { display: block; color: #151515; font-size: .9rem; margin-bottom: .2rem; }
+    .use-case-card p { margin: 0; color: #5a6461; font-size: .83rem; line-height: 1.55; }
+
+    .judging-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin: 1.1rem 0; }
+    @media (max-width: 640px) { .judging-grid { grid-template-columns: 1fr; } }
+    .judging-card { border: 1px solid #e8eae8; border-radius: 8px; padding: 1rem 1.1rem; background: #fff; text-align: center; }
+    .judging-score { display: inline-block; background: #eb001b; color: #fff; border-radius: 20px; padding: .2em .75em; font-size: .78rem; font-weight: 750; letter-spacing: .04em; margin-bottom: .55rem; }
+    .judging-card strong { display: block; color: #151515; font-size: .88rem; margin-bottom: .3rem; }
+    .judging-card p { margin: 0; color: #5a6461; font-size: .8rem; line-height: 1.5; }
+
+
+
+    .demo-proves { background: #f7f8f7; border: 1px solid #e0e2e0; border-left: 3px solid #25885d; border-radius: 0 6px 6px 0; padding: 1rem 1.25rem; margin: 1.1rem 0; }
+    .demo-proves-label { font-size: .69rem; font-weight: 750; letter-spacing: 1.1px; text-transform: uppercase; color: #25885d; margin-bottom: .6rem; }
+    .demo-proves ul { margin: 0; padding-left: 1.3rem; }
+    .demo-proves li { color: #2a2a2a; font-size: .88rem; line-height: 1.6; margin-bottom: .3rem; }
+    .demo-proves li:last-child { margin-bottom: 0; }
+  </style>
+</head>
+<body>
+
+<header class="participant-header">
+  <a class="participant-brand" href="/" aria-label="Mastercard XRPL Hackathon">
+    <span class="mc-mark" aria-hidden="true"><i></i><b></b></span>
+    <span><strong>mastercard</strong><small>XRPL HACKATHON</small></span>
+  </a>
+  <div class="participant-header-links">
+    <a href="/participant">Team portal</a>
+    <a href="/signup">Sign up</a>
+    <a href="/integration-guide" aria-current="page">Developer guide</a>
+  </div>
+</header>
+
+<main>
+
+  <!-- ── Full-width challenge banner ──────────────────────────────────── -->
+  <div id="challenge" style="background:#151515;">
+    <div style="max-width:1140px;margin:0 auto;padding:1.5rem 1.75rem;">
+      <div class="challenge-banner" style="background:transparent;border-radius:0;margin-bottom:0;padding:0;">
+        <div class="challenge-banner-text">
+          <div class="challenge-banner-eyebrow">Mastercard × XRPL Swell Hackathon</div>
+          <h2>Build an agent that pays autonomously.</h2>
+          <p>AP4M is Mastercard's agentic payment primitive. Your challenge: wire it into a project that proves AI agents can transact without human approval — using RLUSD on XRPL.</p>
+        </div>
+        <a href="https://www.mastercard.com/us/en/news-and-trends/press/2026/october/Mastercard-Agent-Pay-for-Machines-in-action.html" target="_blank" rel="noopener" style="color:#888;font-size:.8rem;white-space:nowrap;flex-shrink:0;text-decoration:underline;text-underline-offset:2px;">Mastercard press release ↗</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Two-column layout ──────────────────────────────────────────────── -->
+  <div class="guide-layout" style="padding-top:2rem;">
+
+    <!-- ── Left nav ──────────────────────────────────────────────────── -->
+    <nav class="guide-nav" aria-label="On this page">
+      <div class="guide-nav-inner">
+        <span class="guide-nav-label">On this page</span>
+        <div class="guide-nav-links">
+          <a href="#challenge"     class="guide-nav-link">The challenge</a>
+          <a href="#how-it-works"  class="guide-nav-link">How it works</a>
+          <a href="#what-you-need" class="guide-nav-link">What you need</a>
+          <a href="#api-reference" class="guide-nav-link">API reference</a>
+          <a href="#judging"       class="guide-nav-link">Judging</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ── Main content ──────────────────────────────────────────────── -->
+    <div class="guide-main">
+
+      <!-- ── Hero ──────────────────────────────────────────────────────── -->
+      <div style="margin-bottom:2rem;">
+        <div class="eyebrow" style="margin-top:0"><span></span>DEVELOPER GUIDE</div>
+        <h1 style="margin:.35rem 0 .75rem;color:#151515;">AP4M developer guide</h1>
+        <div class="hackathon-notice">
+          For the Mastercard XRPL Hackathon only. This SDK and guide are not production libraries and must not be used outside of the hackathon context.
+        </div>
+        <p style="color:#3a3a3a;line-height:1.65;margin:.75rem 0 0">AP4M is a payment primitive you embed in <strong>whatever project your team is building</strong> — an AI shopping agent, a data marketplace, a content paywall, IoT billing, anything that needs autonomous machine-to-machine payments. This guide shows you how to wire it in: your agent opens a funded payment channel, signs vouchers to pay merchants, and the service settles RLUSD on-chain. All of this runs on <span class="network-badge" data-network-label>XRPL EVM Testnet · chain ID 1449000</span>.</p>
+        <!-- Run-first demos -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.85rem;margin:1.25rem 0 .75rem;">
+          <div style="border:1px solid #e8eae8;border-top:3px solid #eb001b;border-radius:8px;padding:1rem 1.1rem;background:#fff;">
+            <div style="font-size:.7rem;font-weight:750;letter-spacing:1.1px;text-transform:uppercase;color:#888;margin-bottom:.6rem;">Demo 1 — Direct payment (start here)</div>
+            <p style="font-size:.84rem;color:#3a3a3a;line-height:1.55;margin:0;">Single file, everything pre-filled: team name, API URL, channel ID, contract address. Add your <code>AGENT_PRIVATE_KEY</code> and run <code>node ap4m-agent.js</code>. Walks through sign → redeem on-chain → settle in one go. Get it from the <strong>Quick Start section on your <a href="/participant" style="color:#eb001b;">My Setup tab</a></strong>.</p>
+          </div>
+          <div style="border:1px solid #e8eae8;border-top:3px solid #eb001b;border-radius:8px;padding:1rem 1.1rem;background:#fff;">
+            <div style="font-size:.7rem;font-weight:750;letter-spacing:1.1px;text-transform:uppercase;color:#888;margin-bottom:.6rem;">Demo 2 — x402 HTTP payment (full E2E)</div>
+            <p style="font-size:.84rem;color:#3a3a3a;line-height:1.55;margin:0 0 .75rem;">Run a Merchant and an Agent locally — the Agent pays over HTTP 402 automatically. See <a href="/docs/x402.md" style="color:#eb001b;">x402.md</a> for the full protocol.</p>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap;">
+              <a class="download-btn secondary" href="/sdk/example-x402-agent.mjs" download style="font-size:.82rem;padding:.45rem .9rem;text-decoration:none;display:inline-flex;align-items:center;gap:.35rem;">↓ example-x402-agent.mjs</a>
+              <a class="download-btn secondary" href="/sdk/example-x402-merchant.mjs" download style="font-size:.82rem;padding:.45rem .9rem;text-decoration:none;display:inline-flex;align-items:center;gap:.35rem;">↓ example-x402-merchant.mjs</a>
+            </div>
+          </div>
+        </div>
+        <div style="margin:.75rem 0 0;padding:.75rem 1rem;border:1px solid #e8eae8;border-radius:8px;background:#fafbfa;">
+          <div style="display:flex;flex-wrap:wrap;gap:.5rem;align-items:center;margin-bottom:.5rem;">
+            <span style="font-size:.75rem;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.08em;margin-right:.25rem;">SDK files</span>
+            <a class="download-btn secondary" href="/sdk/ap4m-hackathon-sdk.js" download style="font-size:.81rem;padding:.35rem .8rem;text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;">↓ ap4m-hackathon-sdk.js</a>
+            <a class="download-btn secondary" href="/sdk/ap4m-x402.mjs" download style="font-size:.81rem;padding:.35rem .8rem;text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;">↓ ap4m-x402.mjs</a>
+            <a class="download-btn secondary" href="/sdk/AGENTS.md" download style="font-size:.81rem;padding:.35rem .8rem;text-decoration:none;display:inline-flex;align-items:center;gap:.3rem;">↓ AGENTS.md</a>
+          </div>
+          <p style="margin:0;font-size:.78rem;color:#888;">Drop <code style="font-size:.78rem;">AGENTS.md</code> in your project root so Cursor, Claude Code, and Copilot follow the AP4M kit automatically.</p>
+        </div>
+      </div>
+
+      <!-- ── How it works ──────────────────────────────────────────── -->
+      <section class="guide-section" id="how-it-works">
+        <h2>How it works</h2>
+        <p>AP4M gives your project a <strong>programmable payment layer</strong>. Whatever you are building — an AI agent that buys data, a service that charges per API call, a merchant that sells resources over HTTP — the flow is the same: your agent holds a funded budget, opens payment channels to merchants, and signs cryptographic vouchers to pay. Your private key never leaves your machine. The service handles settlement, transfers RLUSD to the merchant payout address, and publishes a verifiable on-chain receipt.</p>
+        <p>First, add your Agent wallet on the participant portal's My setup tab and fund your budget (from your funding wallet or the hackathon admin). Your agent then opens a <strong>payment channel</strong> with <code>requestChannel()</code>: a funded lane with a spending limit you choose within your budget. Pay by signing vouchers directly or over <a href="#step-x402">x402</a> HTTP — the merchant redeems them on-chain and the service settles automatically.</p>
+        <p>The direct payment flow takes these steps. Settlement is automatic — step 4 just waits for it and returns your receipt. Step 5 closes a channel early; channels close automatically at the event end.</p>
+
+        <div class="seq-diagram" aria-label="Sequence diagram of the AP4M payment flow">
+          <svg viewBox="0 0 860 420" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+            <defs>
+              <marker id="arr"      markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#555"/></marker>
+              <marker id="arr-red"  markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#eb001b"/></marker>
+              <marker id="arr-grn"  markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><polygon points="0 0,8 3,0 6" fill="#25885d"/></marker>
+              <marker id="arr-back" markerWidth="8" markerHeight="6" refX="1" refY="3" orient="auto"><polygon points="8 0,0 3,8 6" fill="#25885d"/></marker>
+            </defs>
+
+            <!-- ── Actor boxes ── -->
+            <!-- Your Agent -->
+            <rect x="20"  y="16" width="130" height="38" rx="5" fill="#151515" stroke="#151515" stroke-width="1"/>
+            <text x="85"  y="39" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="13" font-weight="700" fill="#fff">Your Agent</text>
+            <!-- AP4M Service -->
+            <rect x="330" y="16" width="150" height="38" rx="5" fill="#f0f1f0" stroke="#c8cac8" stroke-width="1.2"/>
+            <text x="405" y="39" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="13" font-weight="700" fill="#151515">AP4M Service</text>
+            <!-- PaymentLedger -->
+            <rect x="590" y="16" width="150" height="38" rx="5" fill="#fff0f0" stroke="#f0b0b0" stroke-width="1.2"/>
+            <text x="665" y="33" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="12" font-weight="700" fill="#c40017">PaymentLedger</text>
+            <text x="665" y="47" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="9.5" fill="#999">on-chain contract</text>
+            <!-- Merchant -->
+            <rect x="750" y="16" width="96" height="38" rx="5" fill="#e8f5ee" stroke="#b0d8bf" stroke-width="1.2"/>
+            <text x="798" y="39" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="13" font-weight="700" fill="#1a6640">Merchant</text>
+
+            <!-- ── Lifelines ── -->
+            <line x1="85"  y1="54" x2="85"  y2="410" stroke="#888" stroke-width="1" stroke-dasharray="4,4"/>
+            <line x1="405" y1="54" x2="405" y2="410" stroke="#c8cac8" stroke-width="1" stroke-dasharray="4,4"/>
+            <line x1="665" y1="54" x2="665" y2="410" stroke="#f0b0b0" stroke-width="1" stroke-dasharray="4,4"/>
+            <line x1="798" y1="54" x2="798" y2="410" stroke="#b0d8bf" stroke-width="1" stroke-dasharray="4,4"/>
+
+            <!-- ── Step 1: sign voucher (local self-call) ── -->
+            <rect x="20" y="72" width="20" height="20" rx="3" fill="#eb001b"/>
+            <text x="30" y="86" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="10" font-weight="700" fill="#fff">1</text>
+            <path d="M85,84 Q128,84 128,96 Q128,108 85,108" fill="none" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+            <text x="148" y="93"  font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="12" font-weight="600" fill="#151515">Sign a payment voucher</text>
+            <text x="148" y="107" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="10" fill="#888">EIP-712 signature — private key never leaves your machine</text>
+
+            <!-- ── Step 2: submit on-chain ── -->
+            <rect x="20" y="130" width="20" height="20" rx="3" fill="#eb001b"/>
+            <text x="30" y="144" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="10" font-weight="700" fill="#fff">2</text>
+            <line x1="85" y1="140" x2="657" y2="140" stroke="#eb001b" stroke-width="2" marker-end="url(#arr-red)"/>
+            <text x="370" y="133" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="12" font-weight="600" fill="#eb001b">redeemVoucher() — direct on-chain tx</text>
+            <text x="370" y="157" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="10" fill="#888">your agent pays XRP gas and calls the contract directly</text>
+
+            <!-- ── Step 3: report tx hash ── -->
+            <rect x="20" y="178" width="20" height="20" rx="3" fill="#eb001b"/>
+            <text x="30" y="192" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="10" font-weight="700" fill="#fff">3</text>
+            <line x1="85" y1="188" x2="397" y2="188" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+            <text x="240" y="181" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="12" font-weight="600" fill="#151515">Report tx hash to service</text>
+            <text x="240" y="203" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="10" fill="#888">POST /record-redemption — triggers immediate settlement</text>
+
+            <!-- ── Step 4: settle → RLUSD to merchant ── -->
+            <rect x="20" y="230" width="20" height="20" rx="3" fill="#eb001b"/>
+            <text x="30" y="244" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="10" font-weight="700" fill="#fff">4</text>
+            <line x1="85"  y1="240" x2="397" y2="240" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+            <text x="240" y="233" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="12" font-weight="600" fill="#151515">Settle — release RLUSD</text>
+            <!-- Service → Ledger (record settlement) -->
+            <line x1="413" y1="254" x2="657" y2="254" stroke="#aaa" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+            <text x="535" y="248" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="9.5" fill="#888">recordSettlement on-chain</text>
+            <!-- Service → Merchant (RLUSD payout) -->
+            <line x1="413" y1="270" x2="790" y2="270" stroke="#25885d" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-grn)"/>
+            <text x="601" y="264" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="9.5" font-weight="600" fill="#25885d">RLUSD → merchant payout address</text>
+
+            <!-- ── Step 5: close channel ── -->
+            <rect x="20" y="300" width="20" height="20" rx="3" fill="#eb001b"/>
+            <text x="30" y="314" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="10" font-weight="700" fill="#fff">5</text>
+            <line x1="85"  y1="310" x2="397" y2="310" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+            <text x="240" y="303" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="12" font-weight="600" fill="#151515">Close the channel (optional)</text>
+            <line x1="413" y1="324" x2="657" y2="324" stroke="#aaa" stroke-width="1.2" stroke-dasharray="5,3" marker-end="url(#arr)"/>
+            <text x="535" y="318" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="9.5" fill="#888">service submits closeChannel on-chain</text>
+
+            <!-- ── Receipt confirmation ── -->
+            <line x1="657" y1="362" x2="95"  y2="362" stroke="#25885d" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr-back)"/>
+            <text x="370" y="356" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="11" font-weight="600" fill="#25885d">Verifiable on-chain receipt — anyone can check</text>
+          </svg>
+        </div>
+
+        <div class="note">
+          <strong>Your agent only does steps 1–3.</strong> Settlement and payout happen automatically — step 4 just triggers them early and returns the receipt. Step 5 is optional; channels auto-close at the event end. RLUSD goes directly to the merchant payout address set at onboarding. <strong>Your private key stays on your machine</strong> — the SDK signs locally and the AP4M service never sees it.
+        </div>
+      </section>
+
+      <!-- ── What you need ──────────────────────────────────────────── -->
+      <section class="guide-section" id="what-you-need">
+        <h2>What you need before you start</h2>
+
+        <div class="checklist-grid">
+          <div class="checklist-card admin-provides">
+            <div class="checklist-card-label">AP4M Hackathon admin provides</div>
+            <div class="checklist-item">
+              <span class="checklist-icon">🔗</span>
+              <div><strong>AP4M service</strong><br><span><code>https://hackathon.ap4m.build</code> — already wired into the starter kit download from your <a href="/participant">My setup tab</a></span></div>
+            </div>
+            <div class="checklist-item">
+              <span class="checklist-icon">📡</span>
+              <div><strong>Team budget</strong><br><span>Opened when you add your Agent on My setup. Your agent opens payment Channels from it with <code>requestChannel()</code>; each Channel has its own spending limit</span></div>
+            </div>
+            <div class="checklist-item">
+              <span class="checklist-icon">💰</span>
+              <div><strong>Funding</strong><br><span>Deposit your budget's RLUSD from your funding wallet on My setup, or ask the hackathon staff to fund it.</span></div>
+            </div>
+          </div>
+
+          <div class="checklist-card you-create">
+            <div class="checklist-card-label">You create</div>
+            <div class="checklist-item">
+              <span class="checklist-icon">🤖</span>
+              <div><strong>Agent wallet</strong><br><span>Signs payments. Add its <em>address</em> on My setup; it signs once to prove it is yours. Never share the key.</span></div>
+            </div>
+            <div class="checklist-item">
+              <span class="checklist-icon">🏦</span>
+              <div><strong>Merchant payout address</strong><br><span>Optional: receives RLUSD when agents pay your team's merchant. Add it on My setup. Keep the private key — it's how you access your winnings.</span></div>
+            </div>
+            <div class="checklist-item">
+              <span class="checklist-icon">⛽</span>
+              <div><strong><span data-gas-token>XRP</span> for gas</strong><br><span>Fund your agent wallet from <span data-gas-source>the <a href="https://faucet.xrplevm.org" target="_blank" rel="noopener">XRPL EVM Testnet faucet</a></span>. A small amount covers many transactions.</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="note">
+          <strong>Separate wallets.</strong> The agent wallet signs payments (it may be your funding wallet). The merchant payout address receives RLUSD and must differ from both. Never share private keys with anyone.
+        </div>
+      </section>
+
+
+      <!-- ── API reference ───────────────────────────────────────────── -->
+      <section class="guide-section" id="api-reference">
+        <h2>API reference</h2>
+        <p>All endpoints are under <code>https://hackathon.ap4m.build</code>. Bearer endpoints require the token from step 1. Full reference with request/response bodies at <a href="/docs/api-reference.md">/docs/api-reference.md</a>.</p>
+      </section>
+
+      <!-- ── Judging criteria ───────────────────────────────────────── -->
+      <section class="guide-section" id="judging">
+        <h2>Judging criteria</h2>
+        <p style="margin:0 0 1rem;color:#3a3a3a;line-height:1.65;">AP4M is a payment primitive — your project wraps it in a use case. Here are some examples of what teams build:</p>
+        <div class="seq-diagram" aria-label="Four AP4M use-case illustrations" style="padding:1.75rem 1.5rem;margin-bottom:1.25rem;">
+          <svg viewBox="0 0 800 176" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto;display:block;">
+            <defs>
+              <marker id="uc-arr" markerWidth="7" markerHeight="5" refX="6" refY="2.5" orient="auto">
+                <polygon points="0 0,7 2.5,0 5" fill="#eb001b"/>
+              </marker>
+            </defs>
+            <!-- Card 1 — AI shopping agent -->
+            <rect x="6"   y="6" width="188" height="164" rx="7" fill="#fff" stroke="#e0e2e0" stroke-width="1.2"/>
+            <rect x="6"   y="6" width="188" height="6"   rx="7" fill="#eb001b"/>
+            <rect x="6"   y="9" width="188" height="3"   fill="#eb001b"/>
+            <rect x="71"  y="26" width="58" height="42" rx="5" fill="#f0f1f0" stroke="#c8cac8" stroke-width="1.2"/>
+            <circle cx="84"  cy="43" r="5.5" fill="#eb001b"/>
+            <circle cx="113" cy="43" r="5.5" fill="#eb001b"/>
+            <rect x="84"  y="53" width="32" height="5" rx="2" fill="#c8cac8"/>
+            <line x1="100" y1="68" x2="100" y2="80" stroke="#c8cac8" stroke-width="1.5"/>
+            <line x1="100" y1="80" x2="140" y2="98" stroke="#eb001b" stroke-width="1.5" marker-end="url(#uc-arr)"/>
+            <circle cx="155" cy="108" r="16" fill="#fef0f0" stroke="#f0b0b0" stroke-width="1.2"/>
+            <text x="155" y="114" text-anchor="middle" font-size="14">🛒</text>
+            <text x="100" y="142" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="12" font-weight="700" fill="#151515">AI Shopping Agent</text>
+            <text x="100" y="157" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="10" fill="#5a6461">buys goods autonomously</text>
+            <!-- Card 2 — Data marketplace -->
+            <rect x="204" y="6" width="188" height="164" rx="7" fill="#fff" stroke="#e0e2e0" stroke-width="1.2"/>
+            <rect x="204" y="6" width="188" height="6"   rx="7" fill="#f79e1b"/>
+            <rect x="204" y="9" width="188" height="3"   fill="#f79e1b"/>
+            <ellipse cx="298" cy="34" rx="28" ry="9" fill="#fff8ee" stroke="#f79e1b" stroke-width="1.2"/>
+            <rect x="270"  y="34" width="56" height="22" fill="#fff8ee" stroke="#f79e1b" stroke-width="1.2"/>
+            <ellipse cx="298" cy="56" rx="28" ry="9" fill="#fff8ee" stroke="#f79e1b" stroke-width="1.2"/>
+            <text x="298" y="49" text-anchor="middle" font-family="Courier New,monospace" font-size="10" fill="#b07000">$/row</text>
+            <line x1="298" y1="65" x2="298" y2="82" stroke="#f79e1b" stroke-width="1.5" marker-end="url(#uc-arr)"/>
+            <rect x="270"  y="84" width="56" height="26" rx="4" fill="#f0f1f0" stroke="#c8cac8" stroke-width="1"/>
+            <text x="298" y="101" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="10" font-weight="700" fill="#151515">pay-per-row</text>
+            <text x="298" y="142" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="12" font-weight="700" fill="#151515">Data Marketplace</text>
+            <text x="298" y="157" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="10" fill="#5a6461">agent pays per API call</text>
+            <!-- Card 3 — x402 Paywall -->
+            <rect x="402" y="6" width="188" height="164" rx="7" fill="#fff" stroke="#e0e2e0" stroke-width="1.2"/>
+            <rect x="402" y="6" width="188" height="6"   rx="7" fill="#25885d"/>
+            <rect x="402" y="9" width="188" height="3"   fill="#25885d"/>
+            <rect x="458" y="22" width="76" height="28" rx="5" fill="#e8f5ee" stroke="#b0d8bf" stroke-width="1.2"/>
+            <text x="496" y="40" text-anchor="middle" font-family="Courier New,monospace" font-size="11" font-weight="700" fill="#1a6640">HTTP 402</text>
+            <line x1="496" y1="50" x2="496" y2="66" stroke="#25885d" stroke-width="1.5" marker-end="url(#uc-arr)"/>
+            <rect x="463"  y="68" width="66" height="26" rx="4" fill="#e8f5ee" stroke="#b0d8bf" stroke-width="1"/>
+            <text x="496" y="85" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="10" font-weight="700" fill="#1a6640">sign voucher</text>
+            <line x1="529" y1="81" x2="553" y2="81" stroke="#25885d" stroke-width="1.5" marker-end="url(#uc-arr)"/>
+            <rect x="555" y="72" width="30" height="20" rx="3" fill="#f0f1f0" stroke="#c8cac8" stroke-width="1"/>
+            <text x="570" y="84" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="9" fill="#151515">content</text>
+            <text x="496" y="142" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="12" font-weight="700" fill="#151515">x402 Paywall</text>
+            <text x="496" y="157" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="10" fill="#5a6461">pay-per-request over HTTP</text>
+            <!-- Card 4 — IoT / metered billing -->
+            <rect x="600" y="6" width="194" height="164" rx="7" fill="#fff" stroke="#e0e2e0" stroke-width="1.2"/>
+            <rect x="600" y="6" width="194" height="6"   rx="7" fill="#7b5ea7"/>
+            <rect x="600" y="9" width="194" height="3"   fill="#7b5ea7"/>
+            <circle cx="697" cy="44" r="11" fill="#f3eeff" stroke="#c4a8f0" stroke-width="1.2"/>
+            <circle cx="697" cy="44" r="20" fill="none" stroke="#c4a8f0" stroke-width="1" stroke-dasharray="3,3"/>
+            <circle cx="697" cy="44" r="29" fill="none" stroke="#c4a8f0" stroke-width="1" stroke-dasharray="3,3" opacity=".5"/>
+            <text x="697" y="49" text-anchor="middle" font-size="12">📡</text>
+            <line x1="697" y1="73" x2="697" y2="90" stroke="#7b5ea7" stroke-width="1.5" marker-end="url(#uc-arr)"/>
+            <rect x="657" y="92" width="80" height="26" rx="4" fill="#f3eeff" stroke="#c4a8f0" stroke-width="1"/>
+            <text x="697" y="109" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="10" font-weight="700" fill="#7b5ea7">per-unit billing</text>
+            <text x="697" y="142" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="12" font-weight="700" fill="#151515">IoT / Metered Billing</text>
+            <text x="697" y="157" text-anchor="middle" font-family="Avenir Next,Avenir,Segoe UI,sans-serif" font-size="10" fill="#5a6461">machine pays per unit used</text>
+          </svg>
+        </div>
+        <div class="judging-grid">
+          <div class="judging-card">
+            <div class="judging-score">Autonomy</div>
+            <strong>Does the agent decide and pay without human approval?</strong>
+            <p>The agent must read the 402 response, choose to pay, sign and submit the voucher — all without a human in the loop.</p>
+          </div>
+          <div class="judging-card">
+            <div class="judging-score">Use case clarity</div>
+            <strong>Is there a real reason a machine needs to pay?</strong>
+            <p>AI agent buying data, paying per API call, unlocking content over x402, billing IoT sensors — the payment must be load-bearing, not cosmetic.</p>
+          </div>
+          <div class="judging-card">
+            <div class="judging-score">On-chain proof</div>
+            <strong>Can you show a VoucherRedeemed event on the explorer?</strong>
+            <p>The on-chain transaction hash is your receipt. Judges verify it lives on XRPL EVM Testnet at the contract address.</p>
+          </div>
+          <div class="judging-card">
+            <div class="judging-score">RLUSD settlement</div>
+            <strong>Does RLUSD actually reach the merchant payout address?</strong>
+            <p>Settlement must complete — not just a voucher submitted. Judges check the merchant wallet balance changed.</p>
+          </div>
+          <div class="judging-card">
+            <div class="judging-score">Demo quality</div>
+            <strong>Can you run the full flow live in 3 minutes?</strong>
+            <p>Agent starts, encounters a 402, pays, resource is unlocked, settlement recorded. No pre-recorded output — live on testnet.</p>
+          </div>
+          <div class="judging-card">
+            <div class="judging-score">Creativity</div>
+            <strong>Is the use case novel or unexpected?</strong>
+            <p>Bonus points for pushing beyond the starter kit example — new merchant types, multi-step agent reasoning, real-world data sources.</p>
+          </div>
+        </div>
+
+        <div class="demo-proves">
+          <div class="demo-proves-label">What a strong demo proves</div>
+          <ul>
+            <li><strong>Autonomous decision</strong> — the agent chose to pay without being told to, based on a 402 response it received.</li>
+            <li><strong>On-chain voucher</strong> — a <code>VoucherRedeemed</code> event visible on the XRPL EVM Testnet explorer at the PaymentLedger contract address (shown on the <a href="/admin/network.html" style="color:#eb001b;">Network config</a> page).</li>
+            <li><strong>Settlement complete</strong> — RLUSD moved from vault to merchant payout address; your portal shows the receipt.</li>
+            <li><strong>Live flow</strong> — judges can watch the agent run, see the 402, see the payment go through, see the resource returned.</li>
+          </ul>
+        </div>
+      </section>
+
+    </div><!-- /guide-main -->
+  </div><!-- /guide-layout -->
+
+</main>
+
+<script>
+  // ── Load contract addresses from service config ──────────────────────
+  fetch('/public/config').then(function (r) { return r.json(); }).then(function (cfg) {
+    var ledger = (cfg.contracts && cfg.contracts.paymentLedger) || 'Not configured';
+    var rlusd  = (cfg.contracts && cfg.contracts.rlusdToken)    || 'Not configured';
+    var el;
+    el = document.getElementById('contractLedgerAddress'); if (el) el.textContent = ledger;
+    el = document.getElementById('contractRlusdAddress');  if (el) el.textContent = rlusd;
+    el = document.getElementById('tipsRlusdAddress');      if (el) el.textContent = rlusd;
+    // Also patch the PAYMENT_LEDGER constant and the RPC URL in code blocks with the live deployment
+    var network = cfg.network || {};
+    document.querySelectorAll('pre code').forEach(function (block) {
+      block.textContent = block.textContent.replace(/PAYMENT_LEDGER_ADDRESS_PLACEHOLDER/g, ledger)
+        .replace(/YOUR_RPC_URL/g, network.rpcUrl || 'YOUR_RPC_URL');
+    });
+    // The page reads as the XRPL EVM Testnet; describe the deployment's own network instead.
+    if (network.name) {
+      document.querySelectorAll('[data-gas-token]').forEach(function (node) { node.textContent = network.gasToken; });
+      document.querySelectorAll('[data-network-name]').forEach(function (node) { node.textContent = network.name; });
+      document.querySelectorAll('[data-network-label]').forEach(function (node) {
+        node.textContent = network.name.charAt(0).toUpperCase() + network.name.slice(1) + ' · chain ID ' + network.chainId;
+      });
+      if (!network.faucetUrl) document.querySelectorAll('[data-gas-source]').forEach(function (node) { node.textContent = network.gasSource; });
+    }
+  }).catch(function () {
+    var el;
+    el = document.getElementById('contractLedgerAddress'); if (el) el.textContent = 'Unavailable';
+    el = document.getElementById('contractRlusdAddress');  if (el) el.textContent = 'Unavailable';
+  });
+
+  // ── Copy buttons ─────────────────────────────────────────────────────
+  document.querySelectorAll('.guide-copy').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var pre = btn.parentElement.querySelector('pre');
+      if (!pre) return;
+      navigator.clipboard.writeText(pre.textContent.trim()).then(function () {
+        btn.textContent = 'Copied!';
+        setTimeout(function () { btn.textContent = 'Copy'; }, 1600);
+      }).catch(function () {});
+    });
+  });
+
+  // ── Scroll spy ───────────────────────────────────────────────────────
+  var navLinks = document.querySelectorAll('.guide-nav-link[href^="#"]');
+  var targets  = document.querySelectorAll('.guide-section, .step-block[id]');
+
+  function updateNav() {
+    var current = '';
+    targets.forEach(function (el) {
+      if (el.getBoundingClientRect().top < window.innerHeight * 0.38) current = el.id;
+    });
+    navLinks.forEach(function (a) {
+      a.classList.toggle('current', a.getAttribute('href') === '#' + current);
+    });
+  }
+
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+</script>
+
+</body>
+</html>
+
