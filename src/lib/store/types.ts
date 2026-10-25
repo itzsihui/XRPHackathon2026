@@ -18,7 +18,7 @@ export type Sku = {
   attrs?: SkuAttrs;
 };
 
-/** Merchant Visa/fiat receiving account stamped onto the store at publish. */
+/** Merchant Mastercard/fiat receiving account stamped onto the store at publish. */
 export type StoreVisaReceive = {
   accountLabel: string;
   receiveId?: string;
@@ -33,7 +33,7 @@ export type StoreRecord = {
   merchantDisplayName?: string;
   /** Crypto receiving wallet (x402 payTo) — XRPL classic r… address. */
   merchantAddress: string;
-  /** Visa/fiat receiving account snapshot for card rail settlement display. */
+  /** Mastercard/fiat receiving account snapshot for card rail settlement display. */
   visaReceive?: StoreVisaReceive;
   /**
    * When true (default), SKUs appear on /market and the agent registry.

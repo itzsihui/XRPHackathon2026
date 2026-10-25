@@ -93,7 +93,7 @@ const ownership = {
   boundWalletAddress: wallet.classicAddress,
   ownerUid: `e2e-${wallet.classicAddress.slice(0, 8)}`,
   merchantDisplayName: "E2E Verified Seller",
-  visaReceive: { accountLabel: "E2E Demo Visa Account" },
+  visaReceive: { accountLabel: "E2E Demo Mastercard account" },
   listOnMarket: true,
 };
 

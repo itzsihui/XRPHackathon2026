@@ -48,7 +48,7 @@ Do not scrape HTML. Do not open a checkout page.
 1. Read the agent card: ${base}/agent.json
 2. Load machine catalog: ${base}/catalog.json
 3. Read verified-purchase reviews: ${base}/reviews.json
-4. Pay via x402 POST ${base}/buy (expect HTTP 402) or Visa-style POST ${base}/checkout
+4. Pay via x402 POST ${base}/buy (expect HTTP 402) or Mastercard-style POST ${base}/checkout
 5. Fetch receipts at ${base}/orders/{orderId}
 
 ## Discovery
@@ -62,7 +62,7 @@ ${sellerSection(store, origin, verification)}
 - Rail A x402: POST ${base}/buy
   - Expect HTTP 402 Payment Required with PAYMENT-REQUIRED.
   - Pay exact amount in ${config.tokenSymbol} on XRPL Testnet to the merchant classic address, then retry with PAYMENT-SIGNATURE (presigned Payment blob).
-- Rail B Visa (agent-authorized card): POST ${base}/checkout
+- Rail B Mastercard (agent-authorized card): POST ${base}/checkout
   - Issue a one-time scoped virtual card (spend cap, merchant whitelist, expiry).
   - Burn the card after success.
 

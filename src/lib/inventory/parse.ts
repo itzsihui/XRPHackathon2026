@@ -209,7 +209,7 @@ function normalizeTitle(raw: string) {
 }
 
 function storeNameFromTitle(title: string) {
-  if (/hackathon/i.test(title)) return "VISA Hackathon Shirts";
+  if (/hackathon/i.test(title)) return "Mastercard Hackathon Shirts";
   return title.replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
@@ -487,7 +487,7 @@ export function parseMerchantPrompt(text: string): InventoryParseResult {
     const skus = extracted.lines.map((line) => {
       const isHackathon = /hackathon/i.test(line.title);
       return {
-        title: isHackathon ? "VISA Hackathon Shirt" : line.title,
+        title: isHackathon ? "Mastercard Hackathon Shirt" : line.title,
         description: `${line.quantity} ${line.title} for ${line.price} ${config.tokenSymbol}`,
         quantity: line.quantity,
         price: String(line.price),
@@ -495,7 +495,7 @@ export function parseMerchantPrompt(text: string): InventoryParseResult {
     });
     const isHackathon = skus.some((s) => /hackathon/i.test(s.title));
     const name = isHackathon
-      ? "VISA Hackathon Shirts"
+      ? "Mastercard Hackathon Shirts"
       : extracted.storeHint ||
         (skus.length === 1
           ? storeNameFromTitle(skus[0].title)
@@ -590,7 +590,7 @@ export function completeDraftWithPrices(
     const price = priceNum.toFixed(2);
     const isHackathon = /hackathon/i.test(line.title);
     skus.push({
-      title: isHackathon ? "VISA Hackathon Shirt" : line.title,
+      title: isHackathon ? "Mastercard Hackathon Shirt" : line.title,
       description:
         line.description?.trim() ||
         `${line.quantity} ${line.title} for ${price} ${config.tokenSymbol}`,
@@ -602,7 +602,7 @@ export function completeDraftWithPrices(
 
   const isHackathon = skus.some((s) => /hackathon/i.test(s.title));
   const name = isHackathon
-    ? "VISA Hackathon Shirts"
+    ? "Mastercard Hackathon Shirts"
     : normalized.name ||
       (skus.length === 1
         ? storeNameFromTitle(skus[0].title)

@@ -72,7 +72,7 @@ function inventoryFromLines(
     const title = line.title.trim();
     const isHackathon = /hackathon/i.test(title);
     return {
-      title: isHackathon ? "VISA Hackathon Shirt" : title,
+      title: isHackathon ? "Mastercard Hackathon Shirt" : title,
       description:
         description ||
         `${line.quantity} ${title} for ${line.price} ${config.tokenSymbol}`,
@@ -82,7 +82,7 @@ function inventoryFromLines(
   });
   const isHackathon = skus.some((s) => /hackathon/i.test(s.title));
   const name = isHackathon
-    ? "VISA Hackathon Shirts"
+    ? "Mastercard Hackathon Shirts"
     : storeName ||
       (skus.length === 1
         ? skus[0].title.replace(/\b\w/g, (c) => c.toUpperCase())
@@ -274,7 +274,7 @@ async function publishStore(
       status: "clarify",
       store: null,
       reply:
-        "Set up your Visa fiat receiving account before publishing (account label required). Both crypto and Visa receive rails are required.",
+        "Set up your Mastercard fiat receiving account before publishing (account label required). Both crypto and Mastercard receive rails are required.",
       draft: null,
     };
   }

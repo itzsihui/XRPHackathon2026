@@ -374,14 +374,14 @@ export function sampleMarketStores(
     },
     {
       slug: "hackathon-shirts",
-      name: "VISA Hackathon Shirts",
+      name: "Mastercard Hackathon Shirts",
       merchantAddress,
       listOnMarket: true,
       createdAt,
       skus: [
         sku(
           "shirt",
-          "VISA Hackathon Shirt",
+          "Mastercard Hackathon Shirt",
           "Official AgentiX Playground tee. Priced in RLUSD on XRPL Testnet.",
           50,
           "0.01",

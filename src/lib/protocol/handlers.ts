@@ -329,7 +329,7 @@ export async function handleCheckout(slug: string, request: Request) {
     store: slug,
     orderId,
     rail: "straitsx-card",
-    message: `card mandate accepted → Visa receive ${store.visaReceive?.accountLabel ?? store.slug}${store.visaReceive?.receiveId ? ` (${store.visaReceive.receiveId})` : ""}, burn ${paidMandate.cardOpaqueId ?? "card"}`,
+    message: `card mandate accepted → Mastercard receive ${store.visaReceive?.accountLabel ?? store.slug}${store.visaReceive?.receiveId ? ` (${store.visaReceive.receiveId})` : ""}, burn ${paidMandate.cardOpaqueId ?? "card"}`,
   });
   return json(receipt(paid, store));
 }

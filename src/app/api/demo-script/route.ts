@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 
 /**
  * One-click AgentiX lifecycle for judges:
- * onboard → XRPL x402 → VISA card rail.
+ * onboard → XRPL x402 → Mastercard rail.
  */
 export async function POST(request: Request) {
   const body = (await request.json().catch(() => ({}))) as {
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   const rails = body.rails?.length ? body.rails : (["x402", "card"] as const);
   const merchantMessage =
     body.merchantMessage ||
-    "Create a store. I'm selling 50 VISA Hackathon Shirts for 0.01 XSGD each.";
+    "Create a store. I'm selling 50 Mastercard Hackathon Shirts for 0.01 XSGD each.";
   const buyerMessage =
     body.buyerMessage ||
     "Agent, go to /s/hackathon-shirts and buy a hackathon shirt.";
@@ -56,7 +56,7 @@ export async function POST(request: Request) {
   if (rails.includes("card")) {
     log.push({
       phase: "straitsx",
-      text: "Issuing scoped VISA virtual card → /checkout → burn",
+      text: "Issuing scoped Mastercard virtual card → /checkout → burn",
     });
     card = await runCardAgent({
       origin,

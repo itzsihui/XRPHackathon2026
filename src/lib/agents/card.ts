@@ -10,7 +10,7 @@ export type CardStep = {
 };
 
 /**
- * Visa / scoped-card checkout.
+ * Mastercard / scoped-card checkout.
  * Pass slug + skuId (+ optional price) to skip rediscovery + llms/catalog fetches
  * when the buyer UI already selected a product.
  */
@@ -82,7 +82,7 @@ export async function runCardAgent(args: {
 
   steps.push({
     type: "card",
-    text: `Issuing scoped Visa mandate · cap ≥${spendCap} · merchant ${slug}`,
+    text: `Issuing scoped Mastercard mandate · cap ≥${spendCap} · merchant ${slug}`,
   });
   const mandate = await issueScopedCard({
     spendCap,

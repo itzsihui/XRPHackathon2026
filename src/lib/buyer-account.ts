@@ -26,7 +26,7 @@ export type SpendEvent = {
   storeSlug?: string;
   storeName?: string;
   merchantDisplayName?: string;
-  /** Where funds went on the merchant side (wallet short or Visa label). */
+  /** Where funds went on the merchant side (wallet short or Mastercard label). */
   merchantReceive?: string;
   skuId?: string;
   imageUrl?: string;
@@ -37,7 +37,7 @@ export type SpendEvent = {
   /** When rail is xrpl-xrp: RLUSD merchant received. */
   deliveredRlusd?: string;
   orderId?: string;
-  /** Visa mandate proof */
+  /** Mastercard mandate proof */
   cardOpaqueId?: string;
   truncatedPan?: string;
   /** Set after a verified-purchase review is submitted. */
@@ -570,7 +570,7 @@ export function markSpendReviewed(args: {
 export function railLabel(rail: SpendEvent["rail"]) {
   if (rail === "xrpl-xrp") return "XRP → RLUSD";
   if (rail === "ap4m") return "Mastercard · AP4M";
-  if (rail === "straitsx-card") return "Visa card";
+  if (rail === "straitsx-card") return "Mastercard";
   return "RLUSD · x402";
 }
 

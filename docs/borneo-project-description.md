@@ -7,7 +7,7 @@ pdf_options:
 
 # Borneo — Project Description
 
-**Two-sided agentic commerce:** merchants publish agent-ready catalogs; buyers discover and pay in one chat — with **Visa-scoped cards** and **USDC**, secured by a **CaMeL-shaped** settle lock against prompt injection.
+**Two-sided agentic commerce:** merchants publish agent-ready catalogs; buyers discover and pay in one chat — with **Mastercard-scoped cards** and **USDC**, secured by a **CaMeL-shaped** settle lock against prompt injection.
 
 | | |
 |---|---|
@@ -20,8 +20,8 @@ pdf_options:
 
 Most “AI shopping” demos stop before money moves — or they scrape HTML, invent SKUs, and ignore the merchant. Real agentic commerce has three hard gaps:
 
-1. **Buyers** — No trustworthy checkout in chat. Fiat (Visa) and stablecoin rails are usually missing or bolted on outside the agent.
-2. **Merchants** — Human storefronts only. No Visa receive + crypto bind, no machine-readable catalog (`llms.txt` / `catalog.json`) agents can trust.
+1. **Buyers** — No trustworthy checkout in chat. Fiat (Mastercard) and stablecoin rails are usually missing or bolted on outside the agent.
+2. **Merchants** — Human storefronts only. No Mastercard receive + crypto bind, no machine-readable catalog (`llms.txt` / `catalog.json`) agents can trust.
 3. **Prompt injection (the existential risk)** — Product titles and descriptions are **untrusted web data**. A hostile listing can instruct the agent to *ignore the buyer, retarget the payee, skip authorize, or exfiltrate card details*. If that text reaches the payment agent, the blast radius is **money and identity**, not a wrong product rank.
 
 Prompt injection is widely recognized as one of the largest unsolved problems for LLM agents that touch tools and funds. Classifier-only defenses plateau; attackers only need one success.
@@ -32,8 +32,8 @@ Prompt injection is widely recognized as one of the largest unsolved problems fo
 
 **Borneo** is a two-sided network:
 
-- **Merchant side** — Conversational onboard (chat / CSV / URL) → bind Visa receive + wallet → publish agent-discoverable storefronts.
-- **Buyer side** — Fashion salesperson chat discovers **live** multi-merchant SKUs, builds a set/cart, and settles **in the same conversation** via Visa or USDC.
+- **Merchant side** — Conversational onboard (chat / CSV / URL) → bind Mastercard receive + wallet → publish agent-discoverable storefronts.
+- **Buyer side** — Fashion salesperson chat discovers **live** multi-merchant SKUs, builds a set/cart, and settles **in the same conversation** via Mastercard or USDC.
 
 Security is not a warning banner. Inspired by Google DeepMind / ETH Zurich **CaMeL** (*Capabilities for Machine Learning* — [arXiv:2503.18813](https://arxiv.org/abs/2503.18813)), Borneo applies a **CaMeL-shaped control-flow lock** at settle:
 
@@ -58,8 +58,8 @@ Borneo productizes that principle for commerce: **untrusted catalog data must no
 |---|---|
 | **Buyer salesperson chat** | Intent → multi-query catalog search → ranked live SKUs (not a hardcoded aisle). |
 | **Build your set / cart** | Add multiple pieces; pay cart in chat; each SKU settles on its own locked quote. |
-| **Visa-scoped checkout** | Spend cap, merchant scope, authorize-first virtual card flow in chat. |
-| **Visa-powered stablecoin rail** | Optional USDC settle via **HTTP 402 / x402** on Base Sepolia. |
+| **Mastercard-scoped checkout** | Spend cap, merchant scope, authorize-first virtual card flow in chat. |
+| **Mastercard-powered stablecoin rail** | Optional USDC settle via **HTTP 402 / x402** on Base Sepolia. |
 | **Merchant agent onboard** | Inventory talk / CSV / URL → published store with agent discovery files. |
 | **Agent storefront protocol** | Agents read `/llms.txt`, `/registry.json`, `/s/{slug}/catalog.json` — **no HTML scrape**. |
 | **CaMeL-shaped quarantine + locked quotes** | Injection demo (e.g. hostile tee) flagged; settle still locks payee/amount. |
@@ -75,7 +75,7 @@ Borneo productizes that principle for commerce: **untrusted catalog data must no
 | App | Next.js, React, TypeScript, Tailwind CSS, Motion |
 | Agents | OpenAI (salesperson + merchant); deterministic tool fallbacks without keys |
 | Auth / data | Firebase Auth + Firestore profiles |
-| Payments | Visa-scoped card flow (fiat-first); USDC on Base Sepolia via **viem** + **x402 / HTTP 402** |
+| Payments | Mastercard-scoped card flow (fiat-first); USDC on Base Sepolia via **viem** + **x402 / HTTP 402** |
 | Protocol | Hono-style agent endpoints; machine catalogs for discovery |
 | Security model | CaMeL-inspired quarantine reader + locked-quote settle (AgentDojo-validated design pattern) |
 | Other | Zod, MetaMask (merchant bind), local/session persistence for demo reliability |
@@ -85,10 +85,10 @@ Borneo productizes that principle for commerce: **untrusted catalog data must no
 ## 5. Implementation (real-world applicability)
 
 **Today (hackathon / pilot)**  
-A fashion marketplace where AI buyers shop in chat and merchants publish once for every agent on the network. Dual rails let risk/compliance lead with Visa authorize while crypto-native settle remains available.
+A fashion marketplace where AI buyers shop in chat and merchants publish once for every agent on the network. Dual rails let risk/compliance lead with Mastercard authorize while crypto-native settle remains available.
 
 **Production path**
-1. Merchant KYC + Visa receive issuance; scoped cards from a licensed issuer.
+1. Merchant KYC + Mastercard receive issuance; scoped cards from a licensed issuer.
 2. Same discovery protocol (`llms.txt` / catalog JSON) as the integration contract for any agent buyer.
 3. Policy engine expansion (CaMeL-style capabilities) on every privileged tool: pay, refund, PII export.
 4. Governance already sketched: per-tx / daily spend caps and merchant listing controls.
@@ -100,7 +100,7 @@ A fashion marketplace where AI buyers shop in chat and merchants publish once fo
 ## 6. Additional Information
 
 **Try the flows**
-- `/buyer` — Shop chat → discover → Visa or USDC  
+- `/buyer` — Shop chat → discover → Mastercard or USDC  
 - Merchant onboard — inventory → publish store  
 - `/market` — browse as human or agent  
 - Seed stores under `/s/{slug}/llms.txt`

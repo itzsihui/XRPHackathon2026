@@ -131,7 +131,7 @@ export function stateFromSnapshot(snapshot: ChatThreadSnapshot): BuyerFlowState 
     selectedId: snapshot.selectedId,
     rail: (() => {
       const raw = snapshot.rail as string | null;
-      if (raw === "visa" || raw === "mastercard") return "mastercard" as const;
+      if (raw === "Mastercard" || raw === "mastercard") return "mastercard" as const;
       if (raw === "stablecoin" || raw === "xrp") return raw;
       return null;
     })(),

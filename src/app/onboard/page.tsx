@@ -58,7 +58,7 @@ export default function OnboardPage() {
   const boundWalletAddress = merchant.profile?.walletAddress ?? null;
   const visaReady = Boolean(merchant.profile?.visaReceive?.accountLabel);
   const visaReceive = merchant.profile?.visaReceive || undefined;
-  /** Visa receive is required; XRPL payTo falls back to MERCHANT_ADDRESS env. */
+  /** Mastercard receive is required; XRPL payTo falls back to MERCHANT_ADDRESS env. */
   const railsReady = visaReady;
 
   useEffect(() => {
@@ -374,7 +374,7 @@ export default function OnboardPage() {
               role: "borneo" as const,
               text: visaReceive?.accountLabel
                 ? `Crypto receive is ${proof.address}. Describe products, import a CSV, or paste a Shopify URL when you're ready.`
-                : `Crypto receive is ${proof.address}. Finish Visa + governance on Setup before publishing.`,
+                : `Crypto receive is ${proof.address}. Finish Mastercard + governance on Setup before publishing.`,
             },
           ]),
     ]);
@@ -469,7 +469,7 @@ export default function OnboardPage() {
         ...prev,
         {
           role: "borneo",
-          text: "Finish Visa receive on Setup before publishing. Both crypto and Visa rails are required.",
+          text: "Finish Mastercard receive on Setup before publishing. Both crypto and Mastercard rails are required.",
         },
       ]);
       router.push("/merchant/setup");
@@ -504,7 +504,7 @@ export default function OnboardPage() {
         ...prev,
         {
           role: "borneo",
-          text: "Finish Visa receive on Setup before publishing.",
+          text: "Finish Mastercard receive on Setup before publishing.",
         },
       ]);
       return;
@@ -520,7 +520,7 @@ export default function OnboardPage() {
         ...prev,
         {
           role: "borneo",
-          text: "Finish Visa receive on Setup before saving to the live store.",
+          text: "Finish Mastercard receive on Setup before saving to the live store.",
         },
       ]);
       return;

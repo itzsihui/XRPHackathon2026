@@ -148,7 +148,7 @@ export default function DashboardPage() {
                 ? ` · ${myStores.length} store${myStores.length === 1 ? "" : "s"}`
                 : " · no stores yet"}
               {myOrders.length > 0
-                ? ` · ${myOrders.filter((o) => o.rail === "x402").length} x402 · ${myOrders.filter((o) => o.rail === "xrpl-xrp").length} XRP · ${myOrders.filter((o) => o.rail === "straitsx-card").length} Visa card`
+                ? ` · ${myOrders.filter((o) => o.rail === "x402").length} x402 · ${myOrders.filter((o) => o.rail === "xrpl-xrp").length} XRP · ${myOrders.filter((o) => o.rail === "straitsx-card").length} Mastercard`
                 : ""}
             </p>
           </div>
@@ -177,7 +177,7 @@ export default function DashboardPage() {
             </div>
             <div className="border border-border bg-background px-4 py-3">
               <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
-                Visa fiat receive
+                Mastercard fiat receive
               </p>
               <p className="mt-1 text-sm">
                 {visa?.accountLabel || "Not set up"}
@@ -204,7 +204,7 @@ export default function DashboardPage() {
                 Rails:{" "}
                 {[
                   merchant.profile.governance.acceptUsdc ? "RLUSD" : null,
-                  merchant.profile.governance.acceptVisa ? "Visa" : null,
+                  merchant.profile.governance.acceptVisa ? "Mastercard" : null,
                 ]
                   .filter(Boolean)
                   .join(" · ") || "none"}
@@ -284,7 +284,7 @@ export default function DashboardPage() {
                       </TableCell>
                       <TableCell>
                         {order.rail === "straitsx-card"
-                          ? "Visa card"
+                          ? "Mastercard"
                           : "x402 XRPL Testnet"}
                       </TableCell>
                       <TableCell>

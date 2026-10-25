@@ -70,13 +70,13 @@ function mandatePk(id: string) {
 
 const seedStore = (): StoreRecord => ({
   slug: "hackathon-shirts",
-  name: "VISA Hackathon Shirts",
+  name: "Mastercard Hackathon Shirts",
   merchantAddress: config.merchantAddress,
   createdAt: new Date().toISOString(),
   skus: [
     {
       id: "shirt",
-      title: "VISA Hackathon Shirt",
+      title: "Mastercard Hackathon Shirt",
       description: "Official AgentiX Playground tee. Priced in RLUSD on XRPL Testnet.",
       quantity: 50,
       price: "0.01",
@@ -347,7 +347,7 @@ function itemToStore(item: Record<string, unknown>): StoreRecord {
     merchantAddress: item.merchantAddress as string,
     visaReceive: visa
       ? {
-          accountLabel: String(visa.accountLabel || "Visa receive"),
+          accountLabel: String(visa.accountLabel || "Mastercard receive"),
           receiveId: visa.receiveId ? String(visa.receiveId) : undefined,
           settlementNote: visa.settlementNote
             ? String(visa.settlementNote)

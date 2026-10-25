@@ -40,7 +40,7 @@ export async function POST(request: Request) {
     return Response.json(mandate);
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Visa card rail failed";
+      error instanceof Error ? error.message : "Mastercard rail failed";
     return Response.json(
       { steps: [{ type: "error", text: message }], error: message },
       { status: 500 },

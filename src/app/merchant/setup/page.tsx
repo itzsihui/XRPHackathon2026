@@ -101,11 +101,11 @@ export default function MerchantSetupPage() {
   async function onSave(e: FormEvent) {
     e.preventDefault();
     if (!visaLabel.trim()) {
-      setError("Visa account label is required");
+      setError("Mastercard account label is required");
       return;
     }
     if (!acceptUsdc && !acceptXrp && !acceptVisa) {
-      setError("Enable at least one payment rail (RLUSD, XRP, or Visa)");
+      setError("Enable at least one payment rail (RLUSD, XRP, or Mastercard)");
       return;
     }
     setBusy(true);
@@ -276,9 +276,9 @@ export default function MerchantSetupPage() {
         </section>
 
         <section className="space-y-3">
-          <h2 className="text-sm font-medium">2. Visa fiat receiving account</h2>
+          <h2 className="text-sm font-medium">2. Mastercard fiat receiving account</h2>
           <p className="text-xs text-foreground/55">
-            Where the Visa scoped-card rail settles. Demo-safe if live StraitsX
+            Where the Mastercard scoped-card rail settles. Demo-safe if live StraitsX
             is unset — saved on your profile and stamped onto each store.
           </p>
           <Input
@@ -347,9 +347,9 @@ export default function MerchantSetupPage() {
               onChange={(e) => setAcceptVisa(e.target.checked)}
             />
             <span>
-              Accept Visa scoped card
+              Accept Mastercard scoped card
               <span className="mt-0.5 block text-xs text-foreground/50">
-                Buyer agents may issue a burnable card mandate to your Visa
+                Buyer agents may issue a burnable card mandate to your Mastercard
                 receive account.
               </span>
             </span>

@@ -27,7 +27,7 @@ export type MerchantGovernance = {
   acceptUsdc: boolean;
   /** Accept XRP pay-in (converted to RLUSD via AMM/DEX) */
   acceptXrp: boolean;
-  /** Accept Visa scoped-card rail */
+  /** Accept Mastercard scoped-card rail */
   acceptVisa: boolean;
   /** Floor unit price agents must respect (RLUSD) */
   minUnitPriceUsdc: number | null;
@@ -114,7 +114,7 @@ export function normalizeMerchantProfile(
       : undefined,
     visaReceive: data.visaReceive
       ? {
-          accountLabel: String(data.visaReceive.accountLabel || "Visa receive"),
+          accountLabel: String(data.visaReceive.accountLabel || "Mastercard receive"),
           receiveId: data.visaReceive.receiveId
             ? String(data.visaReceive.receiveId)
             : undefined,
@@ -278,7 +278,7 @@ export async function bindMerchantVisaReceive(
   const next: MerchantProfile = {
     ...current,
     visaReceive: {
-      accountLabel: visaReceive.accountLabel.trim() || "Visa receive",
+      accountLabel: visaReceive.accountLabel.trim() || "Mastercard receive",
       receiveId: visaReceive.receiveId?.trim() || undefined,
       settlementNote: visaReceive.settlementNote?.trim() || undefined,
     },
@@ -366,11 +366,11 @@ export async function clearMerchantOnboardingDraft(uid: string): Promise<void> {
 }
 
 export function merchantReceivingComplete(profile: MerchantProfile | null) {
-  // XRPL payTo can fall back to MERCHANT_ADDRESS env — Visa label is the hard gate.
+  // XRPL payTo can fall back to MERCHANT_ADDRESS env — Mastercard label is the hard gate.
   return Boolean(profile?.visaReceive?.accountLabel);
 }
 
-/** Visa + crypto receive + governance saved at least once. */
+/** Mastercard + crypto receive + governance saved at least once. */
 export function merchantSetupComplete(profile: MerchantProfile | null) {
   return Boolean(
     merchantReceivingComplete(profile) && profile?.governance?.updatedAt,

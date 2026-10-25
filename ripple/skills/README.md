@@ -7,7 +7,7 @@ the same format. The only difference between agents is which directory they scan
 ## Available skills
 
 - `borneo-registry-shop/` browse the Borneo public agent storefront registry and
-  purchase any listed SKU (x402 RLUSD or Visa-scoped checkout). No API key —
+  purchase any listed SKU (x402 RLUSD or Mastercard-scoped checkout). No API key —
   agents read `/registry.json` / `/llms.txt` and POST `/s/{slug}/buy`. Canonical
   path: `.agents/skills/borneo-registry-shop/` (this folder may be a symlink).
 - `xrpl-agentic-resources/` a context pack for building AI and agent ideas on the

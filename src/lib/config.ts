@@ -43,7 +43,7 @@ export const config = {
     return undefined as `0x${string}` | undefined;
   },
   explorerBase: env("EXPLORER_BASE", "https://testnet.xrpl.org"),
-  /** Optional legacy Card MCP URL — unused when empty; Visa rail uses local mandate. */
+  /** Optional legacy Card MCP URL — unused when empty; Mastercard rail uses local mandate. */
   straitsxMcpUrl: env("STRAITSX_MCP_URL", ""),
   get straitsxMcpToken() {
     return (
